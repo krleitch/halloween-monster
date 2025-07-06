@@ -4,6 +4,7 @@ let JackOLantern: Monster = {
     name: "Jack o’lantern",
     img: "",
     vitality: 9,
+    startVitality: 9,
     inventory: [{
         name: "Poison",
         damage: 1
@@ -17,6 +18,7 @@ let TreeMonster: Monster = {
     name: "Tree Monster",
     img: "",
     vitality: 15,
+    startVitality: 15,
     inventory: [{
         name: "Grenade",
         damage: 6
@@ -30,6 +32,7 @@ let Witch: Monster = {
     name: "Witch",
     img: "",
     vitality: 25,
+    startVitality: 25,
     inventory: [{
         name: "Bomb",
         damage: 10
@@ -46,6 +49,7 @@ let Vampire: Monster = {
     name: "Vampire",
     img: "",
     vitality: 17,
+    startVitality: 17,
     inventory: [{
         name: "Dual Sword",
         damage: 4
@@ -65,6 +69,7 @@ let Werewolf: Monster = {
     name: "Werewolf",
     img: "",
     vitality: 10,
+    startVitality: 10,
     inventory: [{
         name: "Grenade",
         damage: 6
@@ -78,6 +83,7 @@ let Mummy: Monster = {
     name: "Mummy",
     img: "",
     vitality: 12,
+    startVitality: 12,
     inventory: [{
         name: "Grenade",
         damage: 6
@@ -94,6 +100,7 @@ let Frankenstein: Monster = {
     name: "Frankenstein",
     img: "",
     vitality: 15,
+    startVitality: 15,
     inventory: [{
         name: "Dual Sword",
         damage: 4
@@ -113,6 +120,7 @@ let Zombie: Monster = {
     name: "Zombie",
     img: "",
     vitality: 22,
+    startVitality: 22,
     inventory: [{
         name: "Ice",
         damage: 3
@@ -129,6 +137,7 @@ let Gargoyle: Monster = {
     name: "Gargoyle",
     img: "",
     vitality: 15,
+    startVitality: 15,
     inventory: [{
         name: "Bomb",
         damage: 10
@@ -142,6 +151,7 @@ let Clown: Monster = {
     name: "Clown",
     img: "",
     vitality: 20,
+    startVitality: 20,
     inventory: [{
         name: "Grenade",
         damage: 6
@@ -155,6 +165,7 @@ let Goblin: Monster = {
     name: "Goblin",
     img: "",
     vitality: 30,
+    startVitality: 30,
     inventory: [{
         name: "Grenade",
         damage: 6
@@ -168,6 +179,7 @@ let Medusa: Monster = {
     name: "Medusa",
     img: "",
     vitality: 25,
+    startVitality: 25,
     inventory: [{
         name: "Piece M1",
         damage: 0
@@ -181,6 +193,7 @@ let Reaper: Monster = {
     name: "Reaper",
     img: "",
     vitality: 30,
+    startVitality: 30,
     inventory: [{
         name: "Piece R1",
         damage: 0

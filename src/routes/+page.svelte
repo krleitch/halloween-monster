@@ -11,7 +11,13 @@
     }
     function sortVitality() {
         const newPlayers = $playersStore.sort((p1, p2) => {
-            return p2.vitality - p1.vitality
+            if (p1.killed) {
+                return 1
+            } else if (p2.killed) {
+              return -1  
+            } else {
+                return p2.vitality - p1.vitality;
+            }
         });
         newPlayers.forEach((player, index) => {
             player.order = index + 1;
@@ -22,7 +28,13 @@
     }
     function sortOrder() {
         const newPlayers = $playersStore.sort((p1, p2) => {
-            return p1.order - p2.order
+            if (p1.killed) {
+                return 1
+            } else if (p2.killed) {
+              return -1  
+            } else {
+                return p1.order - p2.order;
+            }
         });
         newPlayers.forEach((player, index) => {
             player.order = index + 1;
@@ -40,7 +52,7 @@
     }
 
     // Check if a monster has Died and replace it
-    function battlefieldReplace(player: Player): Item[] {
+    function battlefieldReplace(player: Player, backupPlayers: Player[]): Item[] {
 
         let newBattleField: (Monster| null)[] = [null, null, null]
         let drops: Item[] = [];
@@ -52,6 +64,12 @@
                 let topMonster = $queueStore.shift();
                 queueStore.set($queueStore);
                 let nextMonster = topMonster ? topMonster : null;
+                // transfer the bomb
+                if (nextMonster) {
+                    nextMonster.bombed = monster.bombed;
+                }
+                player.vitality += monster.startVitality;
+                console.log(player.vitality);
                 newBattleField[index] = nextMonster;
                 logs.push({message: monster.name + " was killed by " + player.name + " using " + player.action.item, type: "kill"});
             } else {
@@ -65,17 +83,20 @@
         if (secondLast.vitality <= 0 && !secondLast.killed) {
             secondLast.killed = true;
             logs.push({message: secondLast.name + " was killed by " + player.name + " using " + player.action.item, type: "kill"});
+            player.vitality += backupPlayers[backupPlayers.length-2].vitality;
             drops = drops.concat(secondLast.inventory);
         }
         const last = $playersStore[$playersStore.length-1];
         if (last.vitality <= 0 && !last.killed) {
             last.killed = true;
             logs.push({message: last.name + " was killed by " + player.name + " using " + player.action.item, type: "kill"});
+            player.vitality += backupPlayers[backupPlayers.length-1].vitality;
             drops = drops.concat(last.inventory);
         }
 
         // UPDATE
         battlefieldStore.set(newBattleField);
+        playersStore.set($playersStore);
         drops = drops.filter((drop) => { return drop.name !== "Dagger"});
         return drops;
     }
@@ -85,6 +106,9 @@
     function simulate() {
         logs.push({message: "Starting simulation", type: "info"});
         logs = logs;
+
+        // We need to remember how much health our players had at the start
+        const backupPlayers = JSON.parse(JSON.stringify($playersStore));
 
         // Order is Ice Release > Weapon Damage (Dagger/Double Sword/Grenade/Ice) > Time Bomb > Poison
 
@@ -124,21 +148,22 @@
                 }
             };
 
-            // If frozen go next
-            if (attackBf.frozen) {
-                continue;
-            }
-
             // DEAL Weapon Damage
             switch(action.item) {
                 case "Dagger":
-                    attackBf.vitality -= 3;
+                    if (!attackBf.frozen) {
+                        attackBf.vitality -= 3;
+                    }
                     break;
                 case "Grenade":
-                    attackBf.vitality -= 6;
+                    if (!attackBf.frozen) {
+                        attackBf.vitality -= 6;
+                    }
                     break;
                 case "Dual Sword":
-                    attackBf.vitality -= 4;
+                    if (!attackBf.frozen) {
+                        attackBf.vitality -= 4;
+                    }
                     break;
                 case "Single Sword":
                     let attackBfDual: Player | Monster | null = null;
@@ -149,16 +174,22 @@
                     } else if (action.dual == 5) {
                         attackBfDual = $playersStore[$playersStore.length-1]
                     }
-                    attackBf.vitality -= 2;
+                    if (!attackBf.frozen) {
+                        attackBf.vitality -= 2;
+                    }
                     if (attackBfDual && attackBfDual.frozen == "") {
-                        attackBfDual.vitality -= 2;
+                        if (!attackBfDual.frozen) {
+                            attackBfDual.vitality -= 2;
+                        }
                     }
                     break;
                 case "Bomb":
                     attackBf.bombed = $playersStore[i].name;
                     break;
                 case "Ice":
-                    attackBf.vitality -= 3;
+                    if (!attackBf.frozen) {
+                        attackBf.vitality -= 3;
+                    }
                     attackBf.frozen = $playersStore[i].name;
                     break;
                 case "Poison":
@@ -168,7 +199,7 @@
                     // code block
             }
 
-            let drops = battlefieldReplace($playersStore[i])
+            let drops = battlefieldReplace($playersStore[i], backupPlayers)
             if (drops.length > 0) {
                 logs.push({message: $playersStore[i].name + " looted " + drops.map((d) => d.name).join(", "), type: "loot"});
                 $playersStore[i].inventory = $playersStore[i].inventory.concat(drops);
@@ -184,21 +215,27 @@
                 if (monster && monster.bombed == $playersStore[i].name) {
                     // explode
                     monster.bombed = "";
-                    monster.vitality -= 10;
+                    if (!attackBf.frozen) {
+                        monster.vitality -= 10;
+                    }
                 }
             };
 
             if (secondLast.bombed == $playersStore[i].name) {
                 secondLast.bombed = "";
-                secondLast.vitality -= 10;
+                if (!secondLast.frozen) {
+                    secondLast.vitality -= 10;
+                }
             }
 
             if (last.bombed == $playersStore[i].name) {
                 last.bombed = "";
-                last.vitality -= 10;
+                if (!last.frozen) {
+                    last.vitality -= 10;
+                }
             }
 
-            drops = battlefieldReplace($playersStore[i])
+            drops = battlefieldReplace($playersStore[i], backupPlayers)
             if (drops.length > 0) {
                 logs.push({message: $playersStore[i].name + " looted " + drops.map((d) => d.name).join(", "), type: "loot"});
                 $playersStore[i].inventory = $playersStore[i].inventory.concat(drops);
@@ -208,18 +245,18 @@
             // POISON
             for (var j = 0; j < $battlefieldStore.length; j++) {
                 let monster = $battlefieldStore[j];
-                if (monster && monster.poisoned) {
+                if (monster && monster.poisoned && !monster.frozen) {
                     monster.vitality -= 1;
                 }
             };
-            if (secondLast.poisoned) {
+            if (secondLast.poisoned && !secondLast.frozen) {
                 secondLast.vitality -= 1;
             }
-            if (last.poisoned) {
+            if (last.poisoned && !secondLast.frozen) {
                 last.vitality -= 1;
             }
 
-            drops = battlefieldReplace($playersStore[i])
+            drops = battlefieldReplace($playersStore[i], backupPlayers)
             if (drops.length > 0) {
                 logs.push({message: $playersStore[i].name + " looted " + drops.map((d) => d.name).join(", "), type: "loot"});
                 $playersStore[i].inventory = $playersStore[i].inventory.concat(drops);
@@ -267,7 +304,7 @@
          </div>
 
           <!-- Log -->
-         <div class="flex overflow-scroll flex-col space-y-1 border rounded-xl border-gray-700 p-4 w-126 h-[500px] max-h-[500px]">
+         <div class="flex overflow-auto flex-col space-y-1 border rounded-xl border-gray-700 p-4 w-126 h-[500px] max-h-[500px]">
             {#each logs as log, index}
                 <span class="{log.type}"> {index}: {log.message} </span>
             {/each}

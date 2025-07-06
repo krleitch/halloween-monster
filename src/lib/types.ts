@@ -27,6 +27,7 @@ interface Monster {
     name: string;
     img: string;
     vitality: number;
+    startVitality: number;
     inventory: Item[];
     poisoned: boolean;
     frozen: string;
