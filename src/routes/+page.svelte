@@ -46,6 +46,7 @@
             {#each $battlefieldStore.monsterBf as bf}
                 {#if bf.monster}
                     <div class="flex flex-col"> 
+                        <img alt="" src={"/src/img/" + bf.monster.img}>
                         <span> Name: {bf.monster.name} </span>
                         <span> Vitality: <span class="text-red-400"> {bf.monster.vitality} </span> </span>
 

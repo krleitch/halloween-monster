@@ -2,7 +2,7 @@ import type { Monster, PlayerMonster, Battlefield, Item } from './types';
 
 let JackOLantern: Monster = {
     name: "Jack o’lantern",
-    img: "",
+    img: "JACK.PNG",
     vitality: 9,
     maxVitality: 9,
     inventory: [{
@@ -14,7 +14,7 @@ let JackOLantern: Monster = {
 
 let TreeMonster: Monster = {
     name: "Tree Monster",
-    img: "",
+    img: "TREE.PNG",
     vitality: 15,
     maxVitality: 15,
     inventory: [{
@@ -26,7 +26,7 @@ let TreeMonster: Monster = {
 
 let Witch: Monster = {
     name: "Witch",
-    img: "",
+    img: "WITCH.PNG",
     vitality: 25,
     maxVitality: 25,
     inventory: [{
@@ -42,7 +42,7 @@ let Witch: Monster = {
 
 let Vampire: Monster = {
     name: "Vampire",
-    img: "",
+    img: "VAMPIRE.PNG",
     vitality: 17,
     maxVitality: 17,
     inventory: [{
@@ -62,7 +62,7 @@ let Vampire: Monster = {
 
 let Werewolf: Monster = {
     name: "Werewolf",
-    img: "",
+    img: "WEREWOLF.PNG",
     vitality: 10,
     maxVitality: 10,
     inventory: [{
@@ -74,7 +74,7 @@ let Werewolf: Monster = {
 
 let Mummy: Monster = {
     name: "Mummy",
-    img: "",
+    img: "MUMMY.PNG",
     vitality: 12,
     maxVitality: 12,
     inventory: [{
@@ -90,7 +90,7 @@ let Mummy: Monster = {
 
 let Frankenstein: Monster = {
     name: "Frankenstein",
-    img: "",
+    img: "FRANK.PNG",
     vitality: 15,
     maxVitality: 15,
     inventory: [{
@@ -110,7 +110,7 @@ let Frankenstein: Monster = {
 
 let Zombie: Monster = {
     name: "Zombie",
-    img: "",
+    img: "ZOMBIE.PNG",
     vitality: 22,
     maxVitality: 22,
     inventory: [{
@@ -126,7 +126,7 @@ let Zombie: Monster = {
 
 let Gargoyle: Monster = {
     name: "Gargoyle",
-    img: "",
+    img: "GARGOYLE.PNG",
     vitality: 15,
     maxVitality: 15,
     inventory: [{
@@ -138,7 +138,7 @@ let Gargoyle: Monster = {
 
 let Clown: Monster = {
     name: "Clown",
-    img: "",
+    img: "CLOWN.PNG",
     vitality: 20,
     maxVitality: 20,
     inventory: [{
@@ -150,7 +150,7 @@ let Clown: Monster = {
 
 let Goblin: Monster = {
     name: "Goblin",
-    img: "",
+    img: "GOBLIN.PNG",
     vitality: 30,
     maxVitality: 30,
     inventory: [{
@@ -162,7 +162,7 @@ let Goblin: Monster = {
 
 let Medusa: Monster = {
     name: "Medusa",
-    img: "",
+    img: "MEDUSA.PNG",
     vitality: 25,
     maxVitality: 25,
     inventory: [{
@@ -174,7 +174,7 @@ let Medusa: Monster = {
 
 let Reaper: Monster = {
     name: "Reaper",
-    img: "",
+    img: "REAPER.PNG",
     vitality: 30,
     maxVitality: 30,
     inventory: [{
