@@ -29,14 +29,9 @@ type BfMonster = {
     items: (Item & {owner: string})[]
 }
 
-type BfPlayerMonster = {
-    player: PlayerMonster | undefined
-    items: (Item & {owner: string})[]
-}
-
 type Battlefield = {
     monsterBf: [BfMonster, BfMonster, BfMonster]
-    playerBf: [BfPlayerMonster, BfPlayerMonster]
+    playerBf: [BfMonster, BfMonster]
 }
 
 type Log = {
@@ -44,4 +39,4 @@ type Log = {
     type: "info" | "kill" | "loot" | "sort";
 }
 
-export type { Item, Monster, PlayerMonster, Battlefield, Action, Log }
+export type { Item, Monster, PlayerMonster, Battlefield, Action, Log, BfMonster }

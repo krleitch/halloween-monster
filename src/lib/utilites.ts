@@ -12,6 +12,7 @@ function sortVitality(players: PlayerMonster[]): PlayerMonster[] {
     });
     newPlayers.forEach((player, index) => {
         player.order = index + 1;
+        player.maxVitality = player.vitality;
     });
     return newPlayers;
 }
@@ -23,11 +24,12 @@ function sortOrder(players: PlayerMonster[]): PlayerMonster[] {
         } else if (p2.vitality <= 0) {
             return -1  
         } else {
-            return p2.order - p1.order;
+            return p1.order - p2.order;
         }
     });
     newPlayers.forEach((player, index) => {
         player.order = index + 1;
+        player.maxVitality = player.vitality;
     });
     return newPlayers;
 }

@@ -6,18 +6,27 @@
 
  // PLAYERS
  const storagePlayers = browser && window.localStorage.getItem('players');
- const initialPlayersValue = browser && storagePlayers ? JSON.parse(storagePlayers) : JSON.parse(JSON.stringify(init_players));
+ const initialPlayersValue: PlayerMonster[] = browser && (storagePlayers ? JSON.parse(storagePlayers) : JSON.parse(JSON.stringify(init_players)));
+ // On Refresh we need to make sure the Action ITEM is the same as the ITEM in inventory
+ // Replace with dagger
+ if (initialPlayersValue) {
+    initialPlayersValue.forEach((player) => {
+      const dagger = player.inventory.find((item) => item.name = "Dagger")
+      if (dagger) {
+        player.action.item = dagger;
+      }
+    })
+ }
  const playersStore = writable<PlayerMonster[]>(initialPlayersValue);
  playersStore.subscribe((value) => {
    if (browser) {
-    console.log('saving players')
      window.localStorage.setItem('players', JSON.stringify(value));
    }
  });
 
 // Battlefield
  const storageBattlefield = browser && window.localStorage.getItem('battlefield');
- const initialBattlefieldValue = browser && storageBattlefield ? JSON.parse(storageBattlefield) : JSON.parse(JSON.stringify(init_battlefield));
+ const initialBattlefieldValue = browser && (storageBattlefield ? JSON.parse(storageBattlefield) : JSON.parse(JSON.stringify(init_battlefield)));
  const battlefieldStore = writable<Battlefield>(initialBattlefieldValue);
  battlefieldStore.subscribe((value) => {
    if (browser) {
@@ -27,7 +36,7 @@
 
 // Queue
  const storageQueue = browser && window.localStorage.getItem('queue');
- const initialQueueValue = browser && storageQueue ? JSON.parse(storageQueue) : JSON.parse(JSON.stringify(init_queue));
+ const initialQueueValue = browser && (storageQueue ? JSON.parse(storageQueue) : JSON.parse(JSON.stringify(init_queue)));
  const queueStore = writable<Monster[]>(initialQueueValue);
  queueStore.subscribe((value) => {
    if (browser) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { PlayerMonster, Monster, Item, Action, Log } from "$lib";
+    import type { PlayerMonster, Monster, Item, Action, Log, BfMonster } from "$lib";
 	import { init_players, init_battlefield, init_queue } from "$lib";
     import { playersStore, battlefieldStore, queueStore } from "$lib";
     import { sortVitality, sortOrder } from "$lib";
@@ -26,13 +26,233 @@
     }
     function resetGameSubmit() {
         // Deep copy
-        playersStore.set(JSON.parse(JSON.stringify(init_players)));
+        const newPlayers: PlayerMonster[] = JSON.parse(JSON.stringify(init_players));
+        newPlayers.forEach((player) => {
+            const dagger = player.inventory.find((item) => item.name = "Dagger")
+            if (dagger) {
+                player.action.item = dagger;
+            }
+        });
+        playersStore.set(newPlayers);
         battlefieldStore.set(JSON.parse(JSON.stringify(init_battlefield)));
         queueStore.set(JSON.parse(JSON.stringify(init_queue)));
+        clearLogsSubmit();
         addLog("Battle Initialized", "info");
     }
+
+    // Checks if any of the battlefields need to be unfrozen
+    function checkUnfreeze(playerName: string) {
+        // MONSTER BF
+        $battlefieldStore.monsterBf.forEach((bf) => {
+            bf.items = bf.items.filter((item) => !(item.name == "Ice" && item.owner == playerName))
+        });
+        // PLAYER BF
+        $battlefieldStore.playerBf.forEach((bf) => {
+            bf.items = bf.items.filter((item) => !(item.name == "Ice" && item.owner == playerName))
+        });
+    }
+
+    function getTargetBf(bf: number): BfMonster | undefined {
+        let target: BfMonster | undefined = undefined;
+        if (bf == 1) {
+            target = $battlefieldStore.monsterBf[0];
+        } else if (bf == 2) {
+            target = $battlefieldStore.monsterBf[1];
+        } else if (bf == 3) {
+            target = $battlefieldStore.monsterBf[2];
+        } else if (bf == 4) {
+            target = $battlefieldStore.playerBf[0];
+        } else if (bf == 5) {
+            target = $battlefieldStore.playerBf[1];
+        }
+        return target
+    }
+
+    function dealWeaponDamage(action: Action, playerName: string) {
+
+        let target: BfMonster | undefined = getTargetBf(action.battlefield);
+
+        if (target && target.monster) {
+
+            if (action.item.name == "Dagger" || action.item.name == "Grenade" || action.item.name == "Dual Sword") {
+                target.monster.vitality -= action.item.damage;
+            } else if (action.item.name == "Ice") {
+                target.monster.vitality -= action.item.damage;
+                target.items.push({...action.item, owner: playerName})
+            } else if (action.item.name == "Bomb" || action.item.name == "Poison") {
+                target.items.push({...action.item, owner: playerName})
+            } else if (action.item.name == "Single Sword") {
+                let dualTarget: BfMonster | undefined = getTargetBf(action.dualBattlefield);
+                target.monster.vitality -= action.item.damage;
+                if (dualTarget && dualTarget.monster) {
+                    dualTarget.monster.vitality -= action.item.damage;
+                }
+            }
+        }
+    }
+
+    function removeWeapon(inventory: Item[], name: string) {
+        if (name == "Single Sword" || name == "Dual Sword") {
+            let index = inventory.findIndex((item) => item.name == "Dual Sword");
+            inventory.splice(index, 1);
+            let index2 = inventory.findIndex((item) => item.name == "Single Sword");
+            inventory.splice(index2, 1);
+        } else if (name == "Dagger") {
+            // do nothing
+        }else {
+            let index = inventory.findIndex((item) => item.name == name);
+            inventory.splice(index, 1);
+        }
+    }
+
+    function updateBattlefield(player: PlayerMonster, type: "weapon" | "poison" | "bomb") {
+
+        let drops: Item[] = []
+
+        $battlefieldStore.monsterBf.forEach((bf) => {
+            // Check if dead
+            if (bf.monster && bf.monster.vitality <= 0) {
+                addLog(bf.monster.name + " was killed by " + player.name, "kill")
+                // Add the inventory to what has been dropped
+                drops.concat(bf.monster.inventory)
+
+                // Update the player vitality and maxVitality
+                player.vitality += bf.monster.maxVitality;
+                player.maxVitality = Math.max(player.maxVitality, player.vitality);
+
+                // Replace the monster and remove poison
+                let nextMonster = $queueStore.shift();
+                queueStore.set($queueStore);
+                bf.monster = nextMonster;
+                bf.items = bf.items.filter((item) => !(item.name == "Poison"))
+            }
+        });
+
+        $battlefieldStore.playerBf.forEach((bf) => {
+            // Check if dead
+            if (bf.monster && bf.monster.vitality <= 0) {
+                addLog(bf.monster.name + " was killed by " + player.name, "kill")
+                // Add the inventory to what has been dropped
+                drops.concat(bf.monster.inventory)
+
+                // Update the player vitality and maxVitality depending on what killed it
+                // bombs only explode on players own turn so its easy
+                if (type == "weapon" || "bomb") {
+                    player.vitality += bf.monster.maxVitality;
+                    player.maxVitality = Math.max(player.maxVitality, player.vitality);
+                } else if (type == "poison") {
+                    // if multiple poison then which killed it
+                    let poisons = bf.items.filter((item) => item.name == "Poison")
+                    // rewind the monster vitality to see when it hit 0
+                    let start= bf.monster.vitality;
+                    let index = 0;
+                    while (start < 0) {
+                        index += 1;
+                        start += 1;
+                    }
+                    let killer = $playersStore.find((player) => player.name == poisons[index].owner);
+                    if (killer) {
+                        killer.vitality += bf.monster.maxVitality;
+                        killer.maxVitality = Math.max(player.maxVitality, player.vitality);
+                    }
+                }
+
+                // The battlefield is now empty, remove poison
+                bf.monster = undefined;
+                bf.items = bf.items.filter((item) => !(item.name == "Poison"))
+            }
+        });
+
+        // Add the drops to the player
+        if (drops.length > 0) {
+            addLog(player.name + " looted " + drops.join(", "), "loot");
+            player.inventory.concat(drops);
+        }
+
+    }
+
+    function checkBomb(playerName: string) {
+
+        $battlefieldStore.monsterBf.forEach((bf) => {
+            // Get the bombs
+            let bombs = bf.items.filter((item) => item.name == "Bomb" && item.owner == playerName)
+            bombs.forEach((b) => {
+                if (bf.monster) {
+                    bf.monster.vitality -= b.damage;
+                }
+            });
+            // Remove the bombs
+            bf.items = bf.items.filter((item) => !(item.name == "Bomb" && item.owner == playerName))
+        });
+
+        $battlefieldStore.playerBf.forEach((bf) => {
+            // Get the bombs
+            let bombs = bf.items.filter((item) => item.name == "Bomb" && item.owner == playerName)
+            bombs.forEach((b) => {
+                if (bf.monster) {
+                    bf.monster.vitality -= b.damage;
+                }
+            });
+            // Remove the bombs
+            bf.items = bf.items.filter((item) => !(item.name == "Bomb" && item.owner == playerName))
+        });
+
+    }
+
+    function checkPoison(playerName: string) {
+
+        $battlefieldStore.monsterBf.forEach((bf) => {
+            // Get the Poisons
+            let poisons = bf.items.filter((item) => item.name == "Poison")
+            poisons.forEach((p) => {
+                if (bf.monster) {
+                    bf.monster.vitality -= p.damage;
+                }
+            });
+        });
+
+        $battlefieldStore.playerBf.forEach((bf) => {
+            // Get the Poisons
+            let poisons = bf.items.filter((item) => item.name == "Poison")
+            poisons.forEach((p) => {
+                if (bf.monster) {
+                    bf.monster.vitality -= p.damage;
+                }
+            });
+        });
+
+    }
+
+    //----------------------------------------------------------------------------------------
+    // SIMULATE
+    //----------------------------------------------------------------------------------------
     function simulateSubmit() {
         addLog("Starting simulation", "info");
+
+        // Add the players to battlefield 4,5
+        const playersLength = $playersStore.length;
+        const secondLast = $playersStore[playersLength - 2];
+        const last = $playersStore[playersLength - 1]
+        $battlefieldStore.playerBf[0].monster = secondLast.vitality > 0 ? secondLast : undefined;
+        $battlefieldStore.playerBf[1].monster = last.vitality > 0 ? last : undefined;
+
+        // Ice Release > Weapon Damage (Dagger/Double Sword/Grenade/Ice) > Time Bomb > Poison
+
+        $playersStore.forEach((player) => {
+            
+            checkUnfreeze(player.name);
+            dealWeaponDamage(player.action, player.name); // DMG
+            removeWeapon(player.inventory, player.action.item.name) 
+            // Everytime damage is done we need to update the battlefield
+            updateBattlefield(player, "weapon");
+
+            checkBomb(player.name); // DMG
+            updateBattlefield(player, "bomb");
+
+            checkPoison(player.name); // DMG
+            updateBattlefield(player, "poison");
+
+        });
     }
 
 </script>
@@ -52,7 +272,7 @@
 
                         <!-- Items in play -->
                         {#each bf.items as item}
-                            <span> {item.name } ({item.owner}) </span>
+                            <span class="text-yellow-400"> {item.name} ({item.owner}) </span>
                         {/each}
 
                     </div>
@@ -103,9 +323,11 @@
     <!-- Players -->
     <div class="mt-10 border rounded-xl border-gray-700 p-4">
         <div class="flex flex-row space-x-2 flex-wrap justify-center">
+            {#if $playersStore.length > 0}
             {#each $playersStore as player}
                 <div class="play flex flex-col border rounded-xl border-gray-700 p-2 m-1 w-24"> 
                     <span> {player.name} </span>
+                    <!-- Order and Vitality -->
                     <form class="py-1">
                         <input class="max-w-18 bg-gray-800 text-green-400 min-w-full rounded-md" type="number" id="order" bind:value={player.order}>
                         <input class="max-w-18 bg-gray-800 text-red-400 mt-1 min-w-full rounded-md" type="number" id="vitality" bind:value={player.vitality}>
@@ -115,9 +337,12 @@
                         <span class=:text-red-400> KILLED </span>
                     {:else}
                         <div class="flex flex-col mt-1">
+                            <!-- Player Action-->
                             <select class="bg-gray-800 outline-none text-xs p-1 rounded-md" bind:value={player.action.item}>
                                 {#each player.inventory as item}
-                                    <option value={item}>{item.name}</option>
+                                    {#if item.useable}
+                                        <option value={item}>{item.name}</option>
+                                    {/if}
                                 {/each}
                             </select>
                             <select class="bg-gray-800 outline-none text-xs p-1 mt-1 rounded-md" bind:value={player.action.battlefield}>
@@ -138,6 +363,7 @@
                     {/if}
                 </div>
             {/each}
+            {/if}
         </div>
 
     </div>

@@ -408,7 +408,7 @@ let init_players: PlayerMonster[] = [
     },
     {
         order: 11,
-        name: "Harroet",
+        name: "Harriet",
         img: "",
         vitality: 5,
         maxVitality: 5,
@@ -506,8 +506,8 @@ let init_battlefield: Battlefield = {
         {monster: Witch, items: []},
     ],
     playerBf: [
-        {player: undefined, items: []},
-        {player: undefined, items: []},
+        {monster: undefined, items: []},
+        {monster: undefined, items: []},
     ]
 }
 let init_queue: Monster[] = [Vampire, Werewolf, Mummy, Frankenstein, Zombie, Gargoyle, Clown, Goblin, Medusa, Reaper]
