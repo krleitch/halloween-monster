@@ -20,6 +20,7 @@ interface Player {
     frozen: string;
     bombed: string;
     action: Action;
+    killed: boolean;
 }
 
 interface Monster {

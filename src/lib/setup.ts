@@ -110,7 +110,7 @@ let Frankenstein: Monster = {
 }
 
 let Zombie: Monster = {
-    name: "Frankenstein",
+    name: "Zombie",
     img: "",
     vitality: 22,
     inventory: [{
@@ -210,7 +210,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },
     {
         order: 2,
@@ -228,7 +229,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },
     {
         order: 3,
@@ -246,7 +248,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },
     {
         order: 4,
@@ -264,7 +267,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },
     {
         order: 5,
@@ -282,7 +286,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 6,
         name: "Karissa",
@@ -299,7 +304,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 7,
         name: "Isaac",
@@ -316,7 +322,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 8,
         name: "Vince",
@@ -333,7 +340,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 9,
         name: "Ronel",
@@ -350,7 +358,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 10,
         name: "Zi",
@@ -367,7 +376,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 11,
         name: "Harriet",
@@ -384,7 +394,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 12,
         name: "Jake",
@@ -401,7 +412,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 13,
         name: "Khalil",
@@ -418,7 +430,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 14,
         name: "Krysta",
@@ -435,7 +448,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 15,
         name: "Kaye",
@@ -452,7 +466,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 16,
         name: "Prit",
@@ -469,7 +484,8 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },{
         order: 17,
         name: "Andrew",
@@ -486,11 +502,12 @@ let init_players: Player[] = [
             item: "Dagger",
             battlefield: 1,
             dual : 0
-        }
+        },
+        killed: false,
     },
 ]
 
-let init_battlefield: Monster[] = [JackOLantern, TreeMonster, Witch]
+let init_battlefield: (Monster | null)[] = [JackOLantern, TreeMonster, Witch]
 let init_queue: Monster[] = [Vampire, Werewolf, Mummy, Frankenstein, Zombie, Gargoyle, Clown, Goblin, Medusa, Reaper]
 
 export { init_players, init_battlefield, init_queue }
