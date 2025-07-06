@@ -16,7 +16,7 @@ interface Player {
     img: string;
     vitality: number;
     inventory: Item[];
-    poisoned: boolean;
+    poisoned: string;
     frozen: string;
     bombed: string;
     action: Action;
@@ -29,7 +29,7 @@ interface Monster {
     vitality: number;
     startVitality: number;
     inventory: Item[];
-    poisoned: boolean;
+    poisoned: string;
     frozen: string;
     bombed: string;
 }

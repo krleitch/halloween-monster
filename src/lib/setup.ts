@@ -9,7 +9,7 @@ let JackOLantern: Monster = {
         name: "Poison",
         damage: 1
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -23,7 +23,7 @@ let TreeMonster: Monster = {
         name: "Grenade",
         damage: 6
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -40,7 +40,7 @@ let Witch: Monster = {
         name: "Piece W1",
         damage: 0
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -60,7 +60,7 @@ let Vampire: Monster = {
         name: "Ice",
         damage: 3
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -74,7 +74,7 @@ let Werewolf: Monster = {
         name: "Grenade",
         damage: 6
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -91,7 +91,7 @@ let Mummy: Monster = {
         name: "Poison",
         damage: 1
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -111,7 +111,7 @@ let Frankenstein: Monster = {
         name: "Bomb",
         damage: 10
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -128,7 +128,7 @@ let Zombie: Monster = {
         name: "Grenade",
         damage: 6
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -142,7 +142,7 @@ let Gargoyle: Monster = {
         name: "Bomb",
         damage: 10
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -156,7 +156,7 @@ let Clown: Monster = {
         name: "Grenade",
         damage: 6
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -170,7 +170,7 @@ let Goblin: Monster = {
         name: "Grenade",
         damage: 6
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -184,7 +184,7 @@ let Medusa: Monster = {
         name: "Piece M1",
         damage: 0
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -201,7 +201,7 @@ let Reaper: Monster = {
         name: "Piece R2",
         damage: 0
     }],
-    poisoned: false,
+    poisoned: "",
     frozen: "",
     bombed: "",
 }
@@ -216,7 +216,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -235,7 +235,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -254,7 +254,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -273,7 +273,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -292,7 +292,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -310,7 +310,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -328,7 +328,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -346,7 +346,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -364,7 +364,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -382,7 +382,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -400,7 +400,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -418,7 +418,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -436,7 +436,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -454,7 +454,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -472,7 +472,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -490,7 +490,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {
@@ -508,7 +508,7 @@ let init_players: Player[] = [
             name: "Dagger",
             damage: 3
         }],
-        poisoned: false,
+        poisoned: "",
         frozen: "",
         bombed: "",
         action: {

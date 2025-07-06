@@ -10,6 +10,16 @@
         logs = [];
     }
     function sortVitality() {
+        // Save battlefield 4, 5 state before sortings
+        const secondLast = $playersStore[$playersStore.length-2];
+        const last = $playersStore[$playersStore.length-1];
+        const secondLastBomb = secondLast.bombed;
+        const secondLastPoisoned = secondLast.poisoned;
+        const secondLastFrozen = secondLast.frozen;
+        const lastBomb = last.bombed;
+        const lastPoisoned = last.poisoned;
+        const lastFrozen = last.frozen;
+
         const newPlayers = $playersStore.sort((p1, p2) => {
             if (p1.killed) {
                 return 1
@@ -21,12 +31,31 @@
         });
         newPlayers.forEach((player, index) => {
             player.order = index + 1;
+            player.bombed = "";
+            player.poisoned = "";
+            player.frozen = "";
         });
+        newPlayers[newPlayers.length-2].bombed = secondLastBomb;
+        newPlayers[newPlayers.length-2].poisoned = secondLastPoisoned;
+        newPlayers[newPlayers.length-2].frozen = secondLastFrozen;
+        newPlayers[newPlayers.length-1].bombed = lastBomb;
+        newPlayers[newPlayers.length-1].poisoned = lastPoisoned;
+        newPlayers[newPlayers.length-1].frozen = lastFrozen;
         logs.push({message: "Sorted by VITALITY", type: "sort"});
         logs = logs;
         playersStore.set(newPlayers)
     }
     function sortOrder() {
+        // Save battlefield 4, 5 state before sortings
+        const secondLast = $playersStore[$playersStore.length-2];
+        const last = $playersStore[$playersStore.length-1];
+        const secondLastBomb = secondLast.bombed;
+        const secondLastPoisoned = secondLast.poisoned;
+        const secondLastFrozen = secondLast.frozen;
+        const lastBomb = last.bombed;
+        const lastPoisoned = last.poisoned;
+        const lastFrozen = last.frozen;
+
         const newPlayers = $playersStore.sort((p1, p2) => {
             if (p1.killed) {
                 return 1
@@ -38,7 +67,16 @@
         });
         newPlayers.forEach((player, index) => {
             player.order = index + 1;
+            player.bombed = "";
+            player.poisoned = "";
+            player.frozen = "";
         });
+        newPlayers[newPlayers.length-2].bombed = secondLastBomb;
+        newPlayers[newPlayers.length-2].poisoned = secondLastPoisoned;
+        newPlayers[newPlayers.length-2].frozen = secondLastFrozen;
+        newPlayers[newPlayers.length-1].bombed = lastBomb;
+        newPlayers[newPlayers.length-1].poisoned = lastPoisoned;
+        newPlayers[newPlayers.length-1].frozen = lastFrozen;
         logs.push({message: "Sorted by ORDER", type: "sort"});
         logs = logs;
         playersStore.set(newPlayers)
@@ -52,7 +90,7 @@
     }
 
     // Check if a monster has Died and replace it
-    function battlefieldReplace(player: Player, backupPlayers: Player[]): Item[] {
+    function battlefieldReplace(player: Player, backupPlayers: Player[], bombOwner: string, poisonOwner: string): Item[] {
 
         let newBattleField: (Monster| null)[] = [null, null, null]
         let drops: Item[] = [];
@@ -68,10 +106,18 @@
                 if (nextMonster) {
                     nextMonster.bombed = monster.bombed;
                 }
-                player.vitality += monster.startVitality;
-                console.log(player.vitality);
+
+                if (bombOwner) {
+                    $playersStore.find((val) => val.name == bombOwner)
+                } else if (poisonOwner) {
+
+                } else {
+                    player.vitality += monster.startVitality;
+                    logs.push({message: monster.name + " was killed by " + player.name + " using " + player.action.item, type: "kill"});
+                }
+
                 newBattleField[index] = nextMonster;
-                logs.push({message: monster.name + " was killed by " + player.name + " using " + player.action.item, type: "kill"});
+
             } else {
                 // Still alive
                 newBattleField[index] = monster;
@@ -124,13 +170,13 @@
             }
 
             // remove item from player
-            if (action.item == "Dual Sword") {
-                let index = $playersStore[i].inventory.findIndex((val) => val.name = "Dual Sword" );
+            if (action.item == "Dual Sword" || action.item == "Single Sword") {
+                let index = $playersStore[i].inventory.findIndex((val) => val.name == "Dual Sword" );
                 $playersStore[i].inventory.splice(index, 1);
-                index = $playersStore[i].inventory.findIndex((val) => val.name = "Single Sword" );
+                index = $playersStore[i].inventory.findIndex((val) => val.name == "Single Sword" );
                 $playersStore[i].inventory.splice(index, 1);
             } else if (action.item !== "Dagger") {
-                let index = $playersStore[i].inventory.findIndex((val) => val.name = action.item );
+                let index = $playersStore[i].inventory.findIndex((val) => val.name == action.item );
                 $playersStore[i].inventory.splice(index, 1);   
             }
 
@@ -193,13 +239,13 @@
                     attackBf.frozen = $playersStore[i].name;
                     break;
                 case "Poison":
-                    attackBf.poisoned = true;
+                    attackBf.poisoned = $playersStore[i].name;
                     break;
                 default:
                     // code block
             }
 
-            let drops = battlefieldReplace($playersStore[i], backupPlayers)
+            let drops = battlefieldReplace($playersStore[i], backupPlayers, "", "")
             if (drops.length > 0) {
                 logs.push({message: $playersStore[i].name + " looted " + drops.map((d) => d.name).join(", "), type: "loot"});
                 $playersStore[i].inventory = $playersStore[i].inventory.concat(drops);
@@ -210,10 +256,12 @@
             const last = $playersStore[$playersStore.length-1];
 
             // TIMEBOMB
+            let bombOwner = "";
             for (var j = 0; j < $battlefieldStore.length; j++) {
                 let monster = $battlefieldStore[j];
                 if (monster && monster.bombed == $playersStore[i].name) {
                     // explode
+                    bombOwner = monster.bombed;
                     monster.bombed = "";
                     if (!attackBf.frozen) {
                         monster.vitality -= 10;
@@ -222,6 +270,7 @@
             };
 
             if (secondLast.bombed == $playersStore[i].name) {
+                bombOwner = secondLast.bombed;
                 secondLast.bombed = "";
                 if (!secondLast.frozen) {
                     secondLast.vitality -= 10;
@@ -229,13 +278,14 @@
             }
 
             if (last.bombed == $playersStore[i].name) {
+                bombOwner = last.bombed;
                 last.bombed = "";
                 if (!last.frozen) {
                     last.vitality -= 10;
                 }
             }
 
-            drops = battlefieldReplace($playersStore[i], backupPlayers)
+            drops = battlefieldReplace($playersStore[i], backupPlayers, bombOwner, "")
             if (drops.length > 0) {
                 logs.push({message: $playersStore[i].name + " looted " + drops.map((d) => d.name).join(", "), type: "loot"});
                 $playersStore[i].inventory = $playersStore[i].inventory.concat(drops);
@@ -243,25 +293,29 @@
             }
 
             // POISON
+            let poisonOwner = "";
             for (var j = 0; j < $battlefieldStore.length; j++) {
                 let monster = $battlefieldStore[j];
-                if (monster && monster.poisoned && !monster.frozen) {
+                if (monster && monster.poisoned.length > 0 && !monster.frozen) {
                     monster.vitality -= 1;
                 }
             };
-            if (secondLast.poisoned && !secondLast.frozen) {
+            if (secondLast.poisoned.length > 0 && !secondLast.frozen) {
                 secondLast.vitality -= 1;
             }
             if (last.poisoned && !secondLast.frozen) {
                 last.vitality -= 1;
             }
 
-            drops = battlefieldReplace($playersStore[i], backupPlayers)
+            drops = battlefieldReplace($playersStore[i], backupPlayers, "", "")
             if (drops.length > 0) {
                 logs.push({message: $playersStore[i].name + " looted " + drops.map((d) => d.name).join(", "), type: "loot"});
                 $playersStore[i].inventory = $playersStore[i].inventory.concat(drops);
                 drops = [];
             }
+
+            // Equip the dagger again
+            $playersStore[i].action.item = "Dagger";
 
         };
 
@@ -282,7 +336,7 @@
                         <span> Vitality: <span class="text-red-400"> {monster.vitality} </span> </span>
                         <span> Frozen: <span class="text-blue-400"> {monster.frozen.length > 0 ? monster.frozen : false} </span> </span>
                         <span> Bomb: <span class="text-yellow-400"> {monster.bombed.length > 0 ? monster.bombed : false} </span> </span>
-                        <span> Poison: <span class="text-green-400"> {monster.poisoned} </span> </span>
+                        <span> Poison: <span class="text-green-400"> {monster.poisoned.length > 0 ? monster.poisoned : false} </span> </span>
                         <div class="flex flex-col bg-gray-700 p-2">
                             {#each monster.inventory as item}
                                 <span> {item.name}</span>
