@@ -1,526 +1,515 @@
-import type { Monster, Player } from './types';
+import type { Monster, PlayerMonster, Battlefield, Item } from './types';
 
 let JackOLantern: Monster = {
     name: "Jack o’lantern",
     img: "",
     vitality: 9,
-    startVitality: 9,
+    maxVitality: 9,
     inventory: [{
         name: "Poison",
-        damage: 1
+        damage: 1,
+        useable: true,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let TreeMonster: Monster = {
     name: "Tree Monster",
     img: "",
     vitality: 15,
-    startVitality: 15,
+    maxVitality: 15,
     inventory: [{
         name: "Grenade",
-        damage: 6
+        damage: 6,
+        useable: true,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let Witch: Monster = {
     name: "Witch",
     img: "",
     vitality: 25,
-    startVitality: 25,
+    maxVitality: 25,
     inventory: [{
         name: "Bomb",
-        damage: 10
+        damage: 10,
+        useable: true,
     }, {
         name: "Piece W1",
-        damage: 0
+        damage: 0,
+        useable: false,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let Vampire: Monster = {
     name: "Vampire",
     img: "",
     vitality: 17,
-    startVitality: 17,
+    maxVitality: 17,
     inventory: [{
         name: "Dual Sword",
-        damage: 4
+        damage: 4,
+        useable: true,
     }, {
         name: "Single Sword",
-        damage: 2
+        damage: 2,
+        useable: true
     },{
         name: "Ice",
-        damage: 3
+        damage: 3,
+        useable: true,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let Werewolf: Monster = {
     name: "Werewolf",
     img: "",
     vitality: 10,
-    startVitality: 10,
+    maxVitality: 10,
     inventory: [{
         name: "Grenade",
-        damage: 6
+        damage: 6,
+        useable: true,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let Mummy: Monster = {
     name: "Mummy",
     img: "",
     vitality: 12,
-    startVitality: 12,
+    maxVitality: 12,
     inventory: [{
         name: "Grenade",
-        damage: 6
+        damage: 6,
+        useable: true,
     },{
         name: "Poison",
-        damage: 1
+        damage: 1,
+        useable: true,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let Frankenstein: Monster = {
     name: "Frankenstein",
     img: "",
     vitality: 15,
-    startVitality: 15,
+    maxVitality: 15,
     inventory: [{
         name: "Dual Sword",
-        damage: 4
+        damage: 4,
+        useable: true,
     },{
         name: "Single Sword",
-        damage: 2
+        damage: 2,
+        useable: true,
     },{
         name: "Bomb",
-        damage: 10
+        damage: 10,
+        useable: true
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let Zombie: Monster = {
     name: "Zombie",
     img: "",
     vitality: 22,
-    startVitality: 22,
+    maxVitality: 22,
     inventory: [{
         name: "Ice",
-        damage: 3
+        damage: 3,
+        useable: true,
     },{
         name: "Grenade",
-        damage: 6
+        damage: 6,
+        useable: true,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let Gargoyle: Monster = {
     name: "Gargoyle",
     img: "",
     vitality: 15,
-    startVitality: 15,
+    maxVitality: 15,
     inventory: [{
         name: "Bomb",
-        damage: 10
+        damage: 10,
+        useable: true,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let Clown: Monster = {
     name: "Clown",
     img: "",
     vitality: 20,
-    startVitality: 20,
+    maxVitality: 20,
     inventory: [{
         name: "Grenade",
-        damage: 6
+        damage: 6,
+        useable: true,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let Goblin: Monster = {
     name: "Goblin",
     img: "",
     vitality: 30,
-    startVitality: 30,
+    maxVitality: 30,
     inventory: [{
         name: "Grenade",
-        damage: 6
+        damage: 6,
+        useable: true,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let Medusa: Monster = {
     name: "Medusa",
     img: "",
     vitality: 25,
-    startVitality: 25,
+    maxVitality: 25,
     inventory: [{
         name: "Piece M1",
-        damage: 0
+        damage: 0,
+        useable: false,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
 }
 
 let Reaper: Monster = {
     name: "Reaper",
     img: "",
     vitality: 30,
-    startVitality: 30,
+    maxVitality: 30,
     inventory: [{
         name: "Piece R1",
-        damage: 0
+        damage: 0,
+        useable: false,
     },{
         name: "Piece R2",
-        damage: 0
+        damage: 0,
+        useable: false,
     }],
-    poisoned: "",
-    frozen: "",
-    bombed: "",
+
 }
 
-let init_players: Player[] = [
+let JanahanDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+}
+let NicoleDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+}
+let AnabelDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+}
+let EricDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let NiveeDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let KarissaDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let IsaacDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let VinceDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let RonelDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let ZiDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let HarrietDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let JakeDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let KhalilDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let KhrystaDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let KayeDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let PritDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+let AndrewDagger: Item = {
+    name: "Dagger",
+    damage: 3,
+    useable: true
+} 
+
+let init_players: PlayerMonster[] = [
     {
         order: 1,
         name: "Janahan",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [JanahanDagger],
         action: {
-            item: "Dagger",
+            item: JanahanDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
     },
     {
         order: 2,
         name: "Nicole",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [NicoleDagger],
         action: {
-            item: "Dagger",
+            item: NicoleDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
     },
     {
         order: 3,
         name: "Anabel",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [AnabelDagger],
         action: {
-            item: "Dagger",
+            item: AnabelDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
     },
     {
         order: 4,
         name: "Eric",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [EricDagger],
         action: {
-            item: "Dagger",
+            item: EricDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
     },
     {
         order: 5,
         name: "Nivee",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [NiveeDagger],
         action: {
-            item: "Dagger",
+            item: NiveeDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 6,
         name: "Karissa",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [KarissaDagger],
         action: {
-            item: "Dagger",
+            item: KarissaDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 7,
         name: "Isaac",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [IsaacDagger],
         action: {
-            item: "Dagger",
+            item: IsaacDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 8,
         name: "Vince",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [VinceDagger],
         action: {
-            item: "Dagger",
+            item: VinceDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 9,
         name: "Ronel",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [RonelDagger],
         action: {
-            item: "Dagger",
+            item: RonelDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 10,
         name: "Zi",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [ZiDagger],
         action: {
-            item: "Dagger",
+            item: ZiDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 11,
-        name: "Harriet",
+        name: "Harroet",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [HarrietDagger],
         action: {
-            item: "Dagger",
+            item: HarrietDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 12,
         name: "Jake",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [JakeDagger],
         action: {
-            item: "Dagger",
+            item: JakeDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 13,
         name: "Khalil",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [KhalilDagger],
         action: {
-            item: "Dagger",
+            item: KhalilDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 14,
-        name: "Krysta",
+        name: "Khrysta",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [KhrystaDagger],
         action: {
-            item: "Dagger",
+            item: KhrystaDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 15,
         name: "Kaye",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [KayeDagger],
         action: {
-            item: "Dagger",
+            item: KayeDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 16,
         name: "Prit",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [PritDagger],
         action: {
-            item: "Dagger",
+            item: PritDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
-    },{
+    },
+    {
         order: 17,
         name: "Andrew",
         img: "",
         vitality: 5,
-        inventory: [{
-            name: "Dagger",
-            damage: 3
-        }],
-        poisoned: "",
-        frozen: "",
-        bombed: "",
+        maxVitality: 5,
+        inventory: [AndrewDagger],
         action: {
-            item: "Dagger",
+            item: AndrewDagger,
             battlefield: 1,
-            dual : 0
+            dualBattlefield : 1
         },
-        killed: false,
     },
 ]
 
-let init_battlefield: (Monster | null)[] = [JackOLantern, TreeMonster, Witch]
+let init_battlefield: Battlefield = {
+    monsterBf: [
+        {monster: JackOLantern, items: []},
+        {monster: TreeMonster, items: []},
+        {monster: Witch, items: []},
+    ],
+    playerBf: [
+        {player: undefined, items: []},
+        {player: undefined, items: []},
+    ]
+}
 let init_queue: Monster[] = [Vampire, Werewolf, Mummy, Frankenstein, Zombie, Gargoyle, Clown, Goblin, Medusa, Reaper]
 
 export { init_players, init_battlefield, init_queue }

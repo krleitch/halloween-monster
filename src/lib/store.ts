@@ -1,14 +1,16 @@
  import { browser } from '$app/environment';
  import { writable } from 'svelte/store';
- import type { Monster, Player } from './types';
+
+ import type { Monster, PlayerMonster, Battlefield } from './types';
  import { init_battlefield, init_players, init_queue } from './setup';
 
  // PLAYERS
  const storagePlayers = browser && window.localStorage.getItem('players');
  const initialPlayersValue = browser && storagePlayers ? JSON.parse(storagePlayers) : JSON.parse(JSON.stringify(init_players));
- const playersStore = writable<Player[]>(initialPlayersValue);
+ const playersStore = writable<PlayerMonster[]>(initialPlayersValue);
  playersStore.subscribe((value) => {
    if (browser) {
+    console.log('saving players')
      window.localStorage.setItem('players', JSON.stringify(value));
    }
  });
@@ -16,7 +18,7 @@
 // Battlefield
  const storageBattlefield = browser && window.localStorage.getItem('battlefield');
  const initialBattlefieldValue = browser && storageBattlefield ? JSON.parse(storageBattlefield) : JSON.parse(JSON.stringify(init_battlefield));
- const battlefieldStore = writable<(Monster | null)[]>(initialBattlefieldValue);
+ const battlefieldStore = writable<Battlefield>(initialBattlefieldValue);
  battlefieldStore.subscribe((value) => {
    if (browser) {
      window.localStorage.setItem('battlefield', JSON.stringify(value));

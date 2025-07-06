@@ -1,42 +1,47 @@
 
-interface Item {
-    name: string;
+type Item = {
+    name: "Dagger" | "Poison" | "Dual Sword" | "Single Sword" | "Ice" | "Bomb" | "Grenade" | "Piece W1" | "Piece M1" | "Piece R1" | "Piece R2";
     damage: number;
+    useable: boolean; // We cannot use Pieces as an action
 }
 
-interface Action {
-    item: string;
-    battlefield: number;
-    dual: number; // where the dual swords second strikes. Only shown when Single sword item is selected.
+type Action = {
+    item: Item;
+    battlefield: 1 | 2 | 3 | 4 | 5;
+    dualBattlefield: 1 | 2 | 3 | 4 | 5; // Where the dual swords second strikes. Only shown when Single sword item is selected.
 }
 
-interface Player {
+type Monster = {
+    name: string;
+    img: string;
+    maxVitality: number;
+    vitality: number;
+    inventory: Item[];
+}
+
+type PlayerMonster = Monster & {
     order: number;
-    name: string;
-    img: string;
-    vitality: number;
-    inventory: Item[];
-    poisoned: string;
-    frozen: string;
-    bombed: string;
     action: Action;
-    killed: boolean;
 }
 
-interface Monster {
-    name: string;
-    img: string;
-    vitality: number;
-    startVitality: number;
-    inventory: Item[];
-    poisoned: string;
-    frozen: string;
-    bombed: string;
+type BfMonster = {
+    monster: Monster | undefined
+    items: (Item & {owner: string})[]
 }
 
-interface Log {
+type BfPlayerMonster = {
+    player: PlayerMonster | undefined
+    items: (Item & {owner: string})[]
+}
+
+type Battlefield = {
+    monsterBf: [BfMonster, BfMonster, BfMonster]
+    playerBf: [BfPlayerMonster, BfPlayerMonster]
+}
+
+type Log = {
     message: string;
     type: "info" | "kill" | "loot" | "sort";
 }
 
-export type { Item, Player, Monster, Action, Log }
+export type { Item, Monster, PlayerMonster, Battlefield, Action, Log }
