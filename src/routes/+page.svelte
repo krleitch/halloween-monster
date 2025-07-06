@@ -52,6 +52,11 @@
         });
     }
 
+    function checkFrozen(monster: BfMonster): boolean {
+        // If Bf has Ice on it then it is frozen
+        return monster.items.filter((item) => item.name == "Ice") . length > 0;
+    }
+
     function getTargetBf(bf: number): BfMonster | undefined {
         let target: BfMonster | undefined = undefined;
         if (bf == 1) {
@@ -94,14 +99,14 @@
     function removeWeapon(inventory: Item[], name: string) {
         if (name == "Single Sword" || name == "Dual Sword") {
             let index = inventory.findIndex((item) => item.name == "Dual Sword");
-            inventory.splice(index, 1);
+            inventory = inventory.splice(index, 1);
             let index2 = inventory.findIndex((item) => item.name == "Single Sword");
-            inventory.splice(index2, 1);
+            inventory = inventory.splice(index2, 1);
         } else if (name == "Dagger") {
             // do nothing
         }else {
             let index = inventory.findIndex((item) => item.name == name);
-            inventory.splice(index, 1);
+            inventory = inventory.splice(index, 1);
         }
     }
 
@@ -114,7 +119,7 @@
             if (bf.monster && bf.monster.vitality <= 0) {
                 addLog(bf.monster.name + " was killed by " + player.name, "kill")
                 // Add the inventory to what has been dropped
-                drops.concat(bf.monster.inventory)
+                drops = drops.concat(bf.monster.inventory)
 
                 // Update the player vitality and maxVitality
                 player.vitality += bf.monster.maxVitality;
@@ -133,7 +138,7 @@
             if (bf.monster && bf.monster.vitality <= 0) {
                 addLog(bf.monster.name + " was killed by " + player.name, "kill")
                 // Add the inventory to what has been dropped
-                drops.concat(bf.monster.inventory)
+                drops = drops.concat(bf.monster.inventory)
 
                 // Update the player vitality and maxVitality depending on what killed it
                 // bombs only explode on players own turn so its easy
@@ -165,8 +170,8 @@
 
         // Add the drops to the player
         if (drops.length > 0) {
-            addLog(player.name + " looted " + drops.join(", "), "loot");
-            player.inventory.concat(drops);
+            addLog(player.name + " looted " + drops.map((d) => d.name ).join(", "), "loot");
+            player.inventory = player.inventory.concat(drops);
         }
 
     }
@@ -240,6 +245,8 @@
 
         $playersStore.forEach((player) => {
             
+            // TODO ADD FROZEN CHECKSSSS BEFORE DMG
+
             checkUnfreeze(player.name);
             dealWeaponDamage(player.action, player.name); // DMG
             removeWeapon(player.inventory, player.action.item.name) 
@@ -251,6 +258,18 @@
 
             checkPoison(player.name); // DMG
             updateBattlefield(player, "poison");
+
+            // ReEquip the Dagger for everyone
+            $playersStore.forEach((player) => {
+            const dagger = player.inventory.find((item) => item.name = "Dagger")
+            if (dagger) {
+                player.action.item = dagger;
+            }
+            })
+
+            // Save the state
+            playersStore.set($playersStore);
+            battlefieldStore.set($battlefieldStore);
 
         });
     }
@@ -353,7 +372,7 @@
 
                             <!-- Show the single sword extra battlefield -->
                             {#if player.action.item.name == "Single Sword"}
-                            <select class="bg-gray-800" bind:value={player.action.dualBattlefield}>
+                            <select class="bg-gray-800 outline-none text-xs p-1 mt-1 rounded-md" bind:value={player.action.dualBattlefield}>
                                 {#each [1,2,3,4,5] as battlefield}
                                     <option value={battlefield}>{battlefield}</option>
                                 {/each}
