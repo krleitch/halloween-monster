@@ -5,7 +5,7 @@
 
  // PLAYERS
  const storagePlayers = browser && window.localStorage.getItem('players');
- const initialPlayersValue = browser && storagePlayers ? JSON.parse(storagePlayers) : init_players;
+ const initialPlayersValue = browser && storagePlayers ? JSON.parse(storagePlayers) : JSON.parse(JSON.stringify(init_players));
  const playersStore = writable<Player[]>(initialPlayersValue);
  playersStore.subscribe((value) => {
    if (browser) {
@@ -15,7 +15,7 @@
 
 // Battlefield
  const storageBattlefield = browser && window.localStorage.getItem('battlefield');
- const initialBattlefieldValue = browser && storageBattlefield ? JSON.parse(storageBattlefield) : init_battlefield;
+ const initialBattlefieldValue = browser && storageBattlefield ? JSON.parse(storageBattlefield) : JSON.parse(JSON.stringify(init_battlefield));
  const battlefieldStore = writable<(Monster | null)[]>(initialBattlefieldValue);
  battlefieldStore.subscribe((value) => {
    if (browser) {
@@ -25,7 +25,7 @@
 
 // Queue
  const storageQueue = browser && window.localStorage.getItem('queue');
- const initialQueueValue = browser && storageQueue ? JSON.parse(storageQueue) : init_queue;
+ const initialQueueValue = browser && storageQueue ? JSON.parse(storageQueue) : JSON.parse(JSON.stringify(init_queue));
  const queueStore = writable<Monster[]>(initialQueueValue);
  queueStore.subscribe((value) => {
    if (browser) {
