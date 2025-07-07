@@ -23,7 +23,7 @@
 
     // Buttons
     function tradeSubmit() {
-        if (tradeGiver != undefined && tradeReceiver != undefined && tradeItem != undefined ) {
+        if (tradeGiver != undefined && tradeReceiver != undefined && tradeItem != undefined && tradeItem.name != "Dagger" ) {
 
             if (tradeItem.name == "Dual Sword" || tradeItem.name == "Single Sword") {
                 let tempItemIndex = tradeGiver.inventory.findIndex((item) => item.name == "Dual Sword")
@@ -430,7 +430,6 @@
                                 {/if}
                             {/each}
                         </select>
-                    
                     {:else}
                         <span class="text-gray-400 text-sm mt-1"> No items to trade</span>
                     {/if}
