@@ -21,6 +21,14 @@ let TreeMonster: Monster = {
         name: "Grenade",
         damage: 6,
         useable: true,
+    }, {
+        name: "Dual Sword",
+        damage: 4,
+        useable: true,
+    }, {
+        name: "Single Sword",
+        damage: 2,
+        useable: true
     }],
 }
 
@@ -145,6 +153,10 @@ let Clown: Monster = {
         name: "Grenade",
         damage: 6,
         useable: true,
+    }, {
+        name: "Grenade",
+        damage: 6,
+        useable: true,
     }],
 }
 
@@ -157,6 +169,10 @@ let Goblin: Monster = {
         name: "Grenade",
         damage: 6,
         useable: true,
+    }, {
+        name: "Piece G1",
+        damage: 0,
+        useable: false,
     }],
 }
 

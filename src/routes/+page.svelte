@@ -13,7 +13,7 @@
     }
 
     if ($roundStore == 1) {
-        addLog("Battle Initialized", "info");
+        addLog("Battle initialized", "info");
     }
 
     // Buttons

@@ -1,6 +1,6 @@
 
 type Item = {
-    name: "Dagger" | "Poison" | "Dual Sword" | "Single Sword" | "Ice" | "Bomb" | "Grenade" | "Piece W1" | "Piece M1" | "Piece R1" | "Piece R2";
+    name: "Dagger" | "Poison" | "Dual Sword" | "Single Sword" | "Ice" | "Bomb" | "Grenade" | "Piece W1" | "Piece M1" | "Piece R1" | "Piece R2" | "Piece G1";
     damage: number;
     useable: boolean; // We cannot use Pieces as an action
 }
