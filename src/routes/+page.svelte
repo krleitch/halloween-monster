@@ -395,23 +395,23 @@
                         <span> {player.name} </span>
                         <!-- Order and Vitality -->
                         <form class="py-1">
-                            <input class="max-w-18 bg-gray-800 text-green-400 min-w-full rounded-md" type="number" id="order" bind:value={player.order}>
-                            <input class="max-w-18 bg-gray-800 text-red-400 mt-1 min-w-full rounded-md" type="number" id="vitality" bind:value={player.vitality}>
+                            <input class="max-w-18 border-transparent focus:border-transparent focus:ring-0 bg-gray-800 text-green-400 min-w-full rounded-md" type="number" id="order" bind:value={player.order}>
+                            <input class="max-w-18 border-transparent focus:border-transparent focus:ring-0 bg-gray-800 text-red-400 mt-1 min-w-full rounded-md" type="number" id="vitality" bind:value={player.vitality}>
                         </form>
 
                         {#if player.vitality <= 0}
-                            <span class=:text-red-400> KILLED </span>
+                            <span class="flex justify-center m-2 text-red-400"> KILLED </span>
                         {:else}
                             <div class="flex flex-col mt-1">
                                 <!-- Player Action-->
-                                <select class="bg-gray-800 outline-none text-xs p-1 rounded-md" bind:value={player.action.item}>
+                                <select class="bg-gray-800 border-transparent focus:border-transparent focus:ring-0 text-xs p-1 rounded-md" bind:value={player.action.item}>
                                     {#each player.inventory as item}
                                         {#if item.useable}
                                             <option value={item}> {item.name} </option>
                                         {/if}
                                     {/each}
                                 </select>
-                                <select class="bg-gray-800 outline-none text-xs p-1 mt-1 rounded-md" bind:value={player.action.battlefield}>
+                                <select class="bg-gray-800 border-transparent focus:border-transparent focus:ring-0 text-xs p-1 mt-1 rounded-md" bind:value={player.action.battlefield}>
                                     {#each [1,2,3,4,5] as battlefield}
                                         <option value={battlefield}>{battlefield}</option>
                                     {/each}
@@ -419,7 +419,7 @@
 
                                 <!-- Show the single sword extra battlefield -->
                                 {#if player.action.item.name == "Single Sword"}
-                                <select class="bg-gray-800 outline-none text-xs p-1 mt-1 rounded-md" bind:value={player.action.dualBattlefield}>
+                                <select class="bg-gray-800 border-transparent focus:border-transparent focus:ring-0 text-xs p-1 mt-1 rounded-md" bind:value={player.action.dualBattlefield}>
                                     {#each [1,2,3,4,5] as battlefield}
                                         <option value={battlefield}>{battlefield}</option>
                                     {/each}
@@ -427,11 +427,13 @@
                                 {/if}
 
                                 <!-- show pieces -->
-                                {#each player.inventory as item}
-                                    {#if !item.useable}
-                                        <span class="text-gray-400 text-sm"> {item.name} </span>
-                                    {/if}
-                                {/each}
+                                 <div class="mt-1">
+                                    {#each player.inventory as item}
+                                        {#if !item.useable}
+                                            <span class="flex justify-center text-gray-400 text-sm"> {item.name} </span>
+                                        {/if}
+                                    {/each}
+                                 </div>
                             </div>
                         {/if}
                     </div>
