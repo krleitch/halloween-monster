@@ -1,15 +1,19 @@
 <script lang="ts">
     import type { PlayerMonster, Monster, Item, Action, Log, BfMonster } from "$lib";
 	import { init_players, init_battlefield, init_queue } from "$lib";
-    import { playersStore, battlefieldStore, queueStore } from "$lib";
+    import { playersStore, battlefieldStore, queueStore, roundStore } from "$lib";
     import { sortVitality, sortOrder } from "$lib";
 
     // Logs
-    let logs: Log[] = [{ message: "Battle Initialized", type: "info"}];
+    let logs: Log[] = [];
     function addLog(message: string, type: "kill" | "loot" | "info" | "sort") {
         logs.push({message: message, type: type});
         // force refresh
         logs = logs;
+    }
+
+    if ($roundStore == 1) {
+        addLog("Battle Initialized", "info");
     }
 
     // Buttons
@@ -17,11 +21,13 @@
         logs = [];
     }
     function sortVitalitySubmit() {
-        playersStore.set(sortVitality($playersStore))
+        const newPlayers = sortVitality($playersStore)
+        playersStore.set(newPlayers)
         addLog("Sorted by VITALITY", "sort");
     }
     function sortOrderSubmit() {
-        playersStore.set(sortOrder($playersStore))
+        const newPlayers = sortOrder($playersStore)
+        playersStore.set(newPlayers)
         addLog("Sorted by ORDER", "sort");
     }
     function resetGameSubmit() {
@@ -36,6 +42,7 @@
         playersStore.set(newPlayers);
         battlefieldStore.set(JSON.parse(JSON.stringify(init_battlefield)));
         queueStore.set(JSON.parse(JSON.stringify(init_queue)));
+        roundStore.set(1);
         clearLogsSubmit();
         addLog("Battle Initialized", "info");
     }
@@ -52,9 +59,9 @@
         });
     }
 
-    function checkFrozen(monster: BfMonster): boolean {
+    function checkFrozen(bfMonster: BfMonster): boolean {
         // If Bf has Ice on it then it is frozen
-        return monster.items.filter((item) => item.name == "Ice") . length > 0;
+        return bfMonster.items.filter((item) => item.name == "Ice").length > 0;
     }
 
     function getTargetBf(bf: number): BfMonster | undefined {
@@ -79,18 +86,29 @@
 
         if (target && target.monster) {
 
+            let frozen = checkFrozen(target);
+
             if (action.item.name == "Dagger" || action.item.name == "Grenade" || action.item.name == "Dual Sword") {
-                target.monster.vitality -= action.item.damage;
+                if (!frozen) {
+                    target.monster.vitality -= action.item.damage;
+                }
             } else if (action.item.name == "Ice") {
-                target.monster.vitality -= action.item.damage;
+                if (!frozen) {
+                    target.monster.vitality -= action.item.damage;
+                }
                 target.items.push({...action.item, owner: playerName})
             } else if (action.item.name == "Bomb" || action.item.name == "Poison") {
                 target.items.push({...action.item, owner: playerName})
             } else if (action.item.name == "Single Sword") {
                 let dualTarget: BfMonster | undefined = getTargetBf(action.dualBattlefield);
-                target.monster.vitality -= action.item.damage;
+                if (!frozen) {
+                    target.monster.vitality -= action.item.damage;
+                }
                 if (dualTarget && dualTarget.monster) {
-                    dualTarget.monster.vitality -= action.item.damage;
+                    let dualTargetFrozen = checkFrozen(dualTarget);
+                    if (!dualTargetFrozen) {
+                        dualTarget.monster.vitality -= action.item.damage;
+                    }
                 }
             }
         }
@@ -99,14 +117,14 @@
     function removeWeapon(inventory: Item[], name: string) {
         if (name == "Single Sword" || name == "Dual Sword") {
             let index = inventory.findIndex((item) => item.name == "Dual Sword");
-            inventory = inventory.splice(index, 1);
+            inventory.splice(index, 1);
             let index2 = inventory.findIndex((item) => item.name == "Single Sword");
-            inventory = inventory.splice(index2, 1);
+            inventory.splice(index2, 1);
         } else if (name == "Dagger") {
             // do nothing
-        }else {
+        } else {
             let index = inventory.findIndex((item) => item.name == name);
-            inventory = inventory.splice(index, 1);
+            inventory.splice(index, 1);
         }
     }
 
@@ -121,9 +139,27 @@
                 // Add the inventory to what has been dropped
                 drops = drops.concat(bf.monster.inventory)
 
-                // Update the player vitality and maxVitality
-                player.vitality += bf.monster.maxVitality;
-                player.maxVitality = Math.max(player.maxVitality, player.vitality);
+                // Update the player vitality and maxVitality depending on what killed it
+                // bombs only explode on players own turn so its easy
+                if (type == "weapon" || "bomb") {
+                    player.vitality += bf.monster.maxVitality;
+                    player.maxVitality = Math.max(player.maxVitality, player.vitality);
+                } else if (type == "poison") {
+                    // if multiple poison then which killed it
+                    let poisons = bf.items.filter((item) => item.name == "Poison")
+                    // rewind the monster vitality to see when it hit 0
+                    let start= bf.monster.vitality;
+                    let index = 0;
+                    while (start < 0) {
+                        index += 1;
+                        start += 1;
+                    }
+                    let killer = $playersStore.find((player) => player.name == poisons[index].owner);
+                    if (killer) {
+                        killer.vitality += bf.monster.maxVitality;
+                        killer.maxVitality = Math.max(player.maxVitality, player.vitality);
+                    }
+                }
 
                 // Replace the monster and remove poison
                 let nextMonster = $queueStore.shift();
@@ -180,9 +216,10 @@
 
         $battlefieldStore.monsterBf.forEach((bf) => {
             // Get the bombs
+            const frozen = checkFrozen(bf);
             let bombs = bf.items.filter((item) => item.name == "Bomb" && item.owner == playerName)
             bombs.forEach((b) => {
-                if (bf.monster) {
+                if (bf.monster && !frozen) {
                     bf.monster.vitality -= b.damage;
                 }
             });
@@ -192,9 +229,10 @@
 
         $battlefieldStore.playerBf.forEach((bf) => {
             // Get the bombs
+            const frozen = checkFrozen(bf);
             let bombs = bf.items.filter((item) => item.name == "Bomb" && item.owner == playerName)
             bombs.forEach((b) => {
-                if (bf.monster) {
+                if (bf.monster && !frozen) {
                     bf.monster.vitality -= b.damage;
                 }
             });
@@ -208,9 +246,10 @@
 
         $battlefieldStore.monsterBf.forEach((bf) => {
             // Get the Poisons
+            const frozen = checkFrozen(bf);
             let poisons = bf.items.filter((item) => item.name == "Poison")
             poisons.forEach((p) => {
-                if (bf.monster) {
+                if (bf.monster && !frozen) {
                     bf.monster.vitality -= p.damage;
                 }
             });
@@ -218,9 +257,10 @@
 
         $battlefieldStore.playerBf.forEach((bf) => {
             // Get the Poisons
+            const frozen = checkFrozen(bf);
             let poisons = bf.items.filter((item) => item.name == "Poison")
             poisons.forEach((p) => {
-                if (bf.monster) {
+                if (bf.monster && !frozen) {
                     bf.monster.vitality -= p.damage;
                 }
             });
@@ -232,7 +272,13 @@
     // SIMULATE
     //----------------------------------------------------------------------------------------
     function simulateSubmit() {
-        addLog("Starting simulation", "info");
+        addLog("Starting simulation (Round " + $roundStore + ")", "info");
+        roundStore.set($roundStore + 1);
+
+        // set players maxVitality to their current vitality
+        $playersStore.forEach((player) => {
+            player.maxVitality = player.vitality;
+        });
 
         // Add the players to battlefield 4,5
         const playersLength = $playersStore.length;
@@ -245,8 +291,6 @@
 
         $playersStore.forEach((player) => {
             
-            // TODO ADD FROZEN CHECKSSSS BEFORE DMG
-
             checkUnfreeze(player.name);
             dealWeaponDamage(player.action, player.name); // DMG
             removeWeapon(player.inventory, player.action.item.name) 
@@ -259,19 +303,19 @@
             checkPoison(player.name); // DMG
             updateBattlefield(player, "poison");
 
-            // ReEquip the Dagger for everyone
-            $playersStore.forEach((player) => {
-            const dagger = player.inventory.find((item) => item.name = "Dagger")
+        });
+
+        // Equip the Dagger for everyone
+        $playersStore.forEach((player) => {
+        const dagger = player.inventory.find((item) => item.name = "Dagger")
             if (dagger) {
                 player.action.item = dagger;
             }
-            })
-
-            // Save the state
-            playersStore.set($playersStore);
-            battlefieldStore.set($battlefieldStore);
-
         });
+
+        // Save the state
+        playersStore.set($playersStore);
+        battlefieldStore.set($battlefieldStore);
     }
 
 </script>
@@ -296,7 +340,7 @@
 
                     </div>
                 {:else}
-                    <div> Empty </div>
+                    <div class="flex justify-center mt-24 w-[214px]"> Empty </div>
                 {/if}
             {/each}
          </div>
@@ -343,45 +387,52 @@
     <div class="mt-10 border rounded-xl border-gray-700 p-4">
         <div class="flex flex-row space-x-2 flex-wrap justify-center">
             {#if $playersStore.length > 0}
-            {#each $playersStore as player}
-                <div class="play flex flex-col border rounded-xl border-gray-700 p-2 m-1 w-24"> 
-                    <span> {player.name} </span>
-                    <!-- Order and Vitality -->
-                    <form class="py-1">
-                        <input class="max-w-18 bg-gray-800 text-green-400 min-w-full rounded-md" type="number" id="order" bind:value={player.order}>
-                        <input class="max-w-18 bg-gray-800 text-red-400 mt-1 min-w-full rounded-md" type="number" id="vitality" bind:value={player.vitality}>
-                    </form>
+                {#each $playersStore as player}
+                    <div class="play flex flex-col border rounded-xl border-gray-700 p-2 m-1 w-24"> 
+                        <span> {player.name} </span>
+                        <!-- Order and Vitality -->
+                        <form class="py-1">
+                            <input class="max-w-18 bg-gray-800 text-green-400 min-w-full rounded-md" type="number" id="order" bind:value={player.order}>
+                            <input class="max-w-18 bg-gray-800 text-red-400 mt-1 min-w-full rounded-md" type="number" id="vitality" bind:value={player.vitality}>
+                        </form>
 
-                    {#if player.vitality <= 0}
-                        <span class=:text-red-400> KILLED </span>
-                    {:else}
-                        <div class="flex flex-col mt-1">
-                            <!-- Player Action-->
-                            <select class="bg-gray-800 outline-none text-xs p-1 rounded-md" bind:value={player.action.item}>
+                        {#if player.vitality <= 0}
+                            <span class=:text-red-400> KILLED </span>
+                        {:else}
+                            <div class="flex flex-col mt-1">
+                                <!-- Player Action-->
+                                <select class="bg-gray-800 outline-none text-xs p-1 rounded-md" bind:value={player.action.item}>
+                                    {#each player.inventory as item}
+                                        {#if item.useable}
+                                            <option value={item}> {item.name} </option>
+                                        {/if}
+                                    {/each}
+                                </select>
+                                <select class="bg-gray-800 outline-none text-xs p-1 mt-1 rounded-md" bind:value={player.action.battlefield}>
+                                    {#each [1,2,3,4,5] as battlefield}
+                                        <option value={battlefield}>{battlefield}</option>
+                                    {/each}
+                                </select>
+
+                                <!-- Show the single sword extra battlefield -->
+                                {#if player.action.item.name == "Single Sword"}
+                                <select class="bg-gray-800 outline-none text-xs p-1 mt-1 rounded-md" bind:value={player.action.dualBattlefield}>
+                                    {#each [1,2,3,4,5] as battlefield}
+                                        <option value={battlefield}>{battlefield}</option>
+                                    {/each}
+                                </select>
+                                {/if}
+
+                                <!-- show pieces -->
                                 {#each player.inventory as item}
-                                    {#if item.useable}
-                                        <option value={item}>{item.name}</option>
+                                    {#if !item.useable}
+                                        <span class="text-gray-400 text-sm"> {item.name} </span>
                                     {/if}
                                 {/each}
-                            </select>
-                            <select class="bg-gray-800 outline-none text-xs p-1 mt-1 rounded-md" bind:value={player.action.battlefield}>
-                                {#each [1,2,3,4,5] as battlefield}
-                                    <option value={battlefield}>{battlefield}</option>
-                                {/each}
-                            </select>
-
-                            <!-- Show the single sword extra battlefield -->
-                            {#if player.action.item.name == "Single Sword"}
-                            <select class="bg-gray-800 outline-none text-xs p-1 mt-1 rounded-md" bind:value={player.action.dualBattlefield}>
-                                {#each [1,2,3,4,5] as battlefield}
-                                    <option value={battlefield}>{battlefield}</option>
-                                {/each}
-                            </select>
-                            {/if}
-                        </div>
-                    {/if}
-                </div>
-            {/each}
+                            </div>
+                        {/if}
+                    </div>
+                {/each}
             {/if}
         </div>
 

@@ -44,4 +44,14 @@
    }
  });
 
- export { playersStore, queueStore, battlefieldStore };
+ // Round
+ const storageRound = browser && window.localStorage.getItem('round');
+ const initialRoundValue = browser && (storageRound ? parseInt(storageRound) : 1);
+ const roundStore = writable<number>(initialRoundValue ? initialRoundValue : 1);
+ roundStore.subscribe((value) => {
+   if (browser) {
+     window.localStorage.setItem('round', value.toString());
+   }
+ });
+
+ export { playersStore, queueStore, battlefieldStore, roundStore };
