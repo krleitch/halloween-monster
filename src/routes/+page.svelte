@@ -149,6 +149,7 @@
                         player.inventory = player.inventory.concat(drops);
                     }
                 } else if (type == "bomb") {
+                    // Same as weapon, just different log
                     addLog(bf.monster.name + " was killed by " + player.name + " with Bomb", "kill")
                     player.vitality += bf.monster.maxVitality;
                     player.maxVitality = Math.max(player.maxVitality, player.vitality);
@@ -179,6 +180,7 @@
                         }
                     }
                 }
+                // remove the poison on a dead monster
                 bf.items = bf.items.filter((item) => !(item.name == "Poison"))
             }
         }
@@ -323,7 +325,7 @@
 
 </script>
 
-<div class="bg-gray-900 p-12 text-gray-100 min-h-screen min-w-screen h-full w-full">
+<div class="bg-gray-900 p-12 text-gray-100 min-h-screen min-w-screen h-full w-full font-roboto">
     
     <div class="flex flex-row space-x-4">
 
@@ -380,7 +382,7 @@
                     Sort Order
                 </button>
                 <button class="bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click={simulateSubmit}>
-                    Simulate
+                    Simulate {$roundStore}
                 </button>
             </div>
           </div>
