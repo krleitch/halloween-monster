@@ -130,9 +130,9 @@
 
     function updateBattlefield(player: PlayerMonster, type: "weapon" | "poison" | "bomb") {
 
-        $battlefieldStore.monsterBf.forEach((bf) => {
+        function updateDead(bf: BfMonster) {
             // Check if dead
-            if (bf.monster && bf.monster.vitality <= 0) {
+            if (bf.monster) {
                 // Add the inventory to what has been dropped
                 let drops: Item[] = []
                 drops = drops.concat(bf.monster.inventory)
@@ -179,68 +179,27 @@
                         }
                     }
                 }
+                bf.items = bf.items.filter((item) => !(item.name == "Poison"))
+            }
+        }
 
-                // Replace the monster and remove poison
+        $battlefieldStore.monsterBf.forEach((bf) => {
+            // Check if dead
+            if (bf.monster && bf.monster.vitality <= 0) {
+                updateDead(bf);
+                // Replace the monster
                 let nextMonster = $queueStore.shift();
                 queueStore.set($queueStore);
                 bf.monster = nextMonster;
-                bf.items = bf.items.filter((item) => !(item.name == "Poison"))
             }
         });
 
         $battlefieldStore.playerBf.forEach((bf) => {
             // Check if dead
             if (bf.monster && bf.monster.vitality <= 0) {
-                // Add the inventory to what has been dropped
-                let drops: Item[] = []
-                drops = drops.concat(bf.monster.inventory)
-
-                // Update the player vitality and maxVitality depending on what killed it
-                // bombs only explode on players own turn so its easy
-                if (type == "weapon") {
-                    addLog(bf.monster.name + " was killed by " + player.name + " with " + player.action.item.name, "kill")
-                    player.vitality += bf.monster.maxVitality;
-                    player.maxVitality = Math.max(player.maxVitality, player.vitality);
-                    // Add the drops to the player
-                    if (drops.length > 0) {
-                        addLog(player.name + " looted " + drops.map((d) => d.name ).join(", "), "loot");
-                        player.inventory = player.inventory.concat(drops);
-                    }
-                } else if (type == "bomb") {
-                    addLog(bf.monster.name + " was killed by " + player.name + " with Bomb", "kill")
-                    player.vitality += bf.monster.maxVitality;
-                    player.maxVitality = Math.max(player.maxVitality, player.vitality);
-                    // Add the drops to the player
-                    if (drops.length > 0) {
-                        addLog(player.name + " looted " + drops.map((d) => d.name ).join(", "), "loot");
-                        player.inventory = player.inventory.concat(drops);
-                    }
-                } else if (type == "poison") {
-                    // if multiple poison then which killed it
-                    let poisons = bf.items.filter((item) => item.name == "Poison")
-                    // rewind the monster vitality to see when it hit 0
-                    let start= bf.monster.vitality;
-                    let index = 0;
-                    while (start < 0) {
-                        index += 1;
-                        start += 1;
-                    }
-                    let killer = $playersStore.find((player) => player.name == poisons[index].owner);
-                    if (killer) {
-                        addLog(bf.monster.name + " was killed by " + killer.name + " with Poison", "kill")
-                        killer.vitality += bf.monster.maxVitality;
-                        killer.maxVitality = Math.max(player.maxVitality, player.vitality);
-                        // Add the drops to the killer
-                        if (drops.length > 0) {
-                            addLog(killer.name + " looted " + drops.map((d) => d.name ).join(", "), "loot");
-                            killer.inventory = killer.inventory.concat(drops);
-                        }
-                    }
-                }
-
-                // The battlefield is now empty, remove poison
+                updateDead(bf)
+                // The battlefield is now empty
                 bf.monster = undefined;
-                bf.items = bf.items.filter((item) => !(item.name == "Poison"))
             }
         });
 
@@ -248,7 +207,7 @@
 
     function checkBomb(playerName: string) {
 
-        $battlefieldStore.monsterBf.forEach((bf) => {
+        function explodeBomb(bf: BfMonster) {
             // Get the bombs
             const frozen = checkFrozen(bf);
             let bombs = bf.items.filter((item) => item.name == "Bomb" && item.owner == playerName && !item.fresh)
@@ -259,26 +218,21 @@
             });
             // Remove the bombs
             bf.items = bf.items.filter((item) => !(item.name == "Bomb" && item.owner == playerName && !item.fresh))
+        }
+
+        $battlefieldStore.monsterBf.forEach((bf) => {
+            explodeBomb(bf);
         });
 
         $battlefieldStore.playerBf.forEach((bf) => {
-            // Get the bombs
-            const frozen = checkFrozen(bf);
-            let bombs = bf.items.filter((item) => item.name == "Bomb" && item.owner == playerName && !item.fresh)
-            bombs.forEach((b) => {
-                if (bf.monster && !frozen) {
-                    bf.monster.vitality -= b.damage;
-                }
-            });
-            // Remove the bombs
-            bf.items = bf.items.filter((item) => !(item.name == "Bomb" && item.owner == playerName && !item.fresh))
+            explodeBomb(bf);
         });
 
     }
 
-    function checkPoison(playerName: string) {
+    function checkPoison() {
 
-        $battlefieldStore.monsterBf.forEach((bf) => {
+        function applyPoison(bf: BfMonster) {
             // Get the Poisons
             const frozen = checkFrozen(bf);
             let poisons = bf.items.filter((item) => item.name == "Poison" && !item.fresh)
@@ -287,17 +241,14 @@
                     bf.monster.vitality -= p.damage;
                 }
             });
+        }
+
+        $battlefieldStore.monsterBf.forEach((bf) => {
+            applyPoison(bf);
         });
 
         $battlefieldStore.playerBf.forEach((bf) => {
-            // Get the Poisons
-            const frozen = checkFrozen(bf);
-            let poisons = bf.items.filter((item) => item.name == "Poison" && !item.fresh)
-            poisons.forEach((p) => {
-                if (bf.monster && !frozen) {
-                    bf.monster.vitality -= p.damage;
-                }
-            });
+            applyPoison(bf);
         });
 
     }
@@ -334,7 +285,7 @@
             checkBomb(player.name); // DMG
             updateBattlefield(player, "bomb");
 
-            checkPoison(player.name); // DMG
+            checkPoison(); // DMG
             updateBattlefield(player, "poison");
 
             // Mark all bombs and poisons not fresh
