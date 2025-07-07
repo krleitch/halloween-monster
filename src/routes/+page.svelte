@@ -183,7 +183,7 @@
             }
         }
 
-        $battlefieldStore.monsterBf.forEach((bf) => {
+        $battlefieldStore.monsterBf.forEach((bf, index) => {
             // Check if dead
             if (bf.monster && bf.monster.vitality <= 0) {
                 updateDead(bf);
@@ -191,6 +191,11 @@
                 let nextMonster = $queueStore.shift();
                 queueStore.set($queueStore);
                 bf.monster = nextMonster;
+                if (bf.monster) {
+                    addLog(bf.monster.name + " entered battlefield " + (index+1).toString(), "info")
+                } else {
+                    addLog("Battlefield " + (index+1).toString() + " is now empty", "info")
+                }
             }
         });
 
