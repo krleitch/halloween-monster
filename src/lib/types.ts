@@ -26,7 +26,7 @@ type PlayerMonster = Monster & {
 
 type BfMonster = {
     monster: Monster | undefined
-    items: (Item & {owner: string})[]
+    items: (Item & {owner: string, fresh: boolean})[]
 }
 
 type Battlefield = {

@@ -1,4 +1,4 @@
-import type { PlayerMonster, Monster, Item, Action, Log } from "$lib";
+import type { PlayerMonster } from "$lib";
 
 function sortVitality(players: PlayerMonster[]): PlayerMonster[] {
     const newPlayers = players.sort((p1, p2) => {
