@@ -135,7 +135,7 @@
             if (bf.monster) {
                 // Add the inventory to what has been dropped
                 let drops: Item[] = []
-                drops = drops.concat(bf.monster.inventory)
+                drops = drops.concat(bf.monster.inventory.filter((item) => item.name != "Dagger"))
 
                 // Update the player vitality and maxVitality depending on what killed it
                 // bombs only explode on players own turn so its easy
@@ -333,7 +333,7 @@
 
                         <!-- Items in play -->
                         {#each bf.items as item}
-                            <span class="text-yellow-400"> {item.name} ({item.owner}) </span>
+                            <span class={item.name}> {item.name} ({item.owner}) </span>
                         {/each}
 
                     </div>
@@ -460,6 +460,16 @@
     }
     .sort {
         @apply text-pink-400;
+    }
+
+    .Poison {
+        @apply text-green-400;
+    }
+    .Bomb {
+        @apply text-yellow-400;
+    }
+    .Ice {
+        @apply text-blue-400;
     }
 
     /* Chrome, Safari, Edge, Opera */
