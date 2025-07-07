@@ -12,11 +12,43 @@
         logs = logs;
     }
 
+    // TRADES state
+    let tradeGiver: PlayerMonster | undefined = undefined;
+    let tradeReceiver: PlayerMonster | undefined = undefined;
+    let tradeItem: Item | undefined = undefined;
+
     if ($roundStore == 1) {
         addLog("Battle initialized", "info");
     }
 
     // Buttons
+    function tradeSubmit() {
+        if (tradeGiver != undefined && tradeReceiver != undefined && tradeItem != undefined ) {
+
+            if (tradeItem.name == "Dual Sword" || tradeItem.name == "Single Sword") {
+                let tempItemIndex = tradeGiver.inventory.findIndex((item) => item.name == "Dual Sword")
+                let tempItem = tradeGiver.inventory.splice(tempItemIndex, 1);
+                tradeReceiver.inventory.push(tempItem[0]);
+
+                let tempItemIndex2 = tradeGiver.inventory.findIndex((item) => item.name == "Single Sword")
+                let tempItem2 = tradeGiver.inventory.splice(tempItemIndex2, 1);
+                tradeReceiver.inventory.push(tempItem2[0]);
+                addLog(tradeGiver.name + " traded Dual Sword and Single Sword to " + tradeReceiver.name, "sort");
+
+            } else {
+                let tempItemIndex = tradeGiver.inventory.findIndex((item) => item == tradeItem)
+                let tempItem = tradeGiver.inventory.splice(tempItemIndex, 1);
+                tradeReceiver.inventory.push(tempItem[0]);
+                addLog(tradeGiver.name + " traded " + tempItem[0].name + " to " + tradeReceiver.name, "sort");
+            }
+
+            // save state
+            playersStore.set($playersStore);
+
+            tradeGiver = $playersStore[0];
+            tradeReceiver = $playersStore[1];
+        }
+    }
     function clearLogsSubmit() {
         logs = [];
     }
@@ -39,11 +71,15 @@
                 player.action.item = dagger;
             }
         });
+
         playersStore.set(newPlayers);
         battlefieldStore.set(JSON.parse(JSON.stringify(init_battlefield)));
         queueStore.set(JSON.parse(JSON.stringify(init_queue)));
         roundStore.set(1);
         clearLogsSubmit();
+
+        tradeGiver = $playersStore[0];
+        tradeReceiver = $playersStore[1];
         addLog("Battle initialized", "info");
     }
 
@@ -282,32 +318,33 @@
         // Ice Release > Weapon Damage (Dagger/Double Sword/Grenade/Ice) > Time Bomb > Poison
 
         $playersStore.forEach((player) => {
-            
-            checkUnfreeze(player.name);
-            dealWeaponDamage(player.action, player.name); // DMG
-            removeWeapon(player.inventory, player.action.item.name) 
-            // Everytime damage is done we need to update the battlefield
-            updateBattlefield(player, "weapon");
+            // Check if player is dead
+            if (player.vitality > 0) {
+                checkUnfreeze(player.name);
+                dealWeaponDamage(player.action, player.name); // DMG
+                removeWeapon(player.inventory, player.action.item.name) 
+                // Everytime damage is done we need to update the battlefield
+                updateBattlefield(player, "weapon");
 
-            checkBomb(player.name); // DMG
-            updateBattlefield(player, "bomb");
+                checkBomb(player.name); // DMG
+                updateBattlefield(player, "bomb");
 
-            checkPoison(); // DMG
-            updateBattlefield(player, "poison");
+                checkPoison(); // DMG
+                updateBattlefield(player, "poison");
 
-            // Mark all bombs and poisons not fresh
-            // fresh bombs and poisons are not triggered on the turn they are used
-            $battlefieldStore.monsterBf.forEach((bf) => {
-                bf.items.forEach((item) => {
-                    item.fresh = false;
+                // Mark all bombs and poisons not fresh
+                // fresh bombs and poisons are not triggered on the turn they are used
+                $battlefieldStore.monsterBf.forEach((bf) => {
+                    bf.items.forEach((item) => {
+                        item.fresh = false;
+                    });
                 });
-            });
-            $battlefieldStore.playerBf.forEach((bf) => {
-                bf.items.forEach((item) => {
-                    item.fresh = false;
+                $battlefieldStore.playerBf.forEach((bf) => {
+                    bf.items.forEach((item) => {
+                        item.fresh = false;
+                    });
                 });
-            });
-    
+            }
         });
 
         // Equip the Dagger for everyone
@@ -321,6 +358,9 @@
         // Save the state
         playersStore.set($playersStore);
         battlefieldStore.set($battlefieldStore);
+
+        tradeGiver = $playersStore[0];
+        tradeReceiver = $playersStore[1];
     }
 
 </script>
@@ -375,6 +415,39 @@
                 </button>
             </div>
             <div class="flex flex-col space-y-4">
+                <!-- TRADE -->
+                <div class="flex flex-col">
+                    <select class="bg-red-800 border-transparent focus:border-transparent focus:ring-0 text-xs p-1 rounded-md" bind:value={tradeGiver}>
+                        {#each $playersStore as player}
+                            <option value={player}> {player.name} </option>
+                        {/each}
+                    </select>
+                    {#if tradeGiver && tradeGiver.inventory.length > 1 }
+                        <select class="bg-red-800 border-transparent focus:border-transparent focus:ring-0 text-xs p-1 mt-1 rounded-md" bind:value={tradeItem}>
+                            {#each tradeGiver.inventory as item}
+                                {#if item.name !== "Dagger"}
+                                    <option value={item}> {item.name} </option>
+                                {/if}
+                            {/each}
+                        </select>
+                    
+                    {:else}
+                        <span class="text-gray-400 text-sm mt-1"> No items to trade</span>
+                    {/if}
+                    {#if tradeGiver}
+                        <select class="bg-green-800 border-transparent focus:border-transparent focus:ring-0 text-xs p-1 mt-1 rounded-md" bind:value={tradeReceiver}>
+                            {#each $playersStore as player}
+                                {#if player.name != tradeGiver.name}
+                                    <option value={player}> {player.name} </option>
+                                {/if}
+                            {/each}
+                        </select>
+                    {/if}
+                    <button class="bg-yellow-400 hover:bg-yellow-700 text-white font-bold py-2 px-4 mt-2 rounded" on:click={tradeSubmit}>
+                        Trade Item
+                    </button>
+                </div>
+
                 <button class="bg-red-400 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" on:click={sortVitalitySubmit}>
                     Sort Vitality
                 </button>
