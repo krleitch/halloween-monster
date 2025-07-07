@@ -47,6 +47,7 @@
 
             tradeGiver = $playersStore[0];
             tradeReceiver = $playersStore[1];
+            tradeItem = undefined;
         }
     }
     function clearLogsSubmit() {
@@ -80,6 +81,7 @@
 
         tradeGiver = $playersStore[0];
         tradeReceiver = $playersStore[1];
+        tradeItem = undefined;
         addLog("Battle initialized", "info");
     }
 
@@ -361,6 +363,7 @@
 
         tradeGiver = $playersStore[0];
         tradeReceiver = $playersStore[1];
+        tradeItem = undefined;
     }
 
 </script>
