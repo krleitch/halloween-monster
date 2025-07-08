@@ -22,6 +22,7 @@ type Monster = {
 type PlayerMonster = Monster & {
     order: number;
     action: Action;
+    killed: boolean;
 }
 
 type BfMonster = {

@@ -253,6 +253,13 @@
             }
         });
 
+        // Check if any players died
+        $playersStore.forEach((player) => {
+            if (player.vitality <= 0 ) {
+                player.killed = true;
+            }
+        });
+
     }
 
     function checkBomb(playerName: string) {
@@ -326,7 +333,7 @@
 
         $playersStore.forEach((player) => {
             // Check if player is dead
-            if (player.vitality > 0) {
+            if (!player.killed) {
                 checkUnfreeze(player.name);
                 dealWeaponDamage(player.action, player.name); // DMG
                 removeWeapon(player.inventory, player.action.item.name) 
@@ -356,7 +363,7 @@
 
         // Equip the Dagger for everyone
         $playersStore.forEach((player) => {
-        const dagger = player.inventory.find((item) => item.name = "Dagger")
+            const dagger = player.inventory.find((item) => item.name = "Dagger")
             if (dagger) {
                 player.action.item = dagger;
             }
@@ -481,7 +488,7 @@
                             <input class="max-w-18 border-transparent focus:border-transparent focus:ring-0 bg-gray-800 text-red-400 mt-1 min-w-full rounded-md" type="number" id="vitality" bind:value={player.vitality}>
                         </form>
 
-                        {#if player.vitality <= 0}
+                        {#if player.killed}
                             <span class="flex justify-center m-2 text-red-400"> KILLED </span>
                         {:else}
                             <div class="flex flex-col mt-1">

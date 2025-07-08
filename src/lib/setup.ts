@@ -304,6 +304,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 2,
@@ -317,6 +318,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 3,
@@ -330,6 +332,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 4,
@@ -343,6 +346,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 5,
@@ -356,6 +360,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 6,
@@ -369,6 +374,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 7,
@@ -382,6 +388,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 8,
@@ -395,6 +402,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 9,
@@ -408,6 +416,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 10,
@@ -421,6 +430,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 11,
@@ -434,6 +444,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 12,
@@ -447,6 +458,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 13,
@@ -460,6 +472,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 14,
@@ -473,6 +486,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 15,
@@ -486,6 +500,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 16,
@@ -499,6 +514,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
     {
         order: 17,
@@ -512,6 +528,7 @@ let init_players: PlayerMonster[] = [
             battlefield: 1,
             dualBattlefield : 1
         },
+        killed: false,
     },
 ]
 
