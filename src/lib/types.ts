@@ -36,7 +36,7 @@ type Battlefield = {
 
 type Log = {
     message: string;
-    type: "info" | "kill" | "loot" | "sort";
+    type: "info" | "kill" | "loot" | "sort" | "health";
 }
 
 export type { Item, Monster, PlayerMonster, Battlefield, Action, Log, BfMonster }

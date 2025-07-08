@@ -6,7 +6,7 @@
 
     // Logs
     let logs: Log[] = [];
-    function addLog(message: string, type: "kill" | "loot" | "info" | "sort") {
+    function addLog(message: string, type: "kill" | "loot" | "info" | "sort" | "health") {
         logs.push({message: message, type: type});
         // force refresh
         logs = logs;
@@ -135,7 +135,9 @@
                     target.monster.vitality -= action.item.damage;
                 }
                 target.items.push({...action.item, owner: playerName, fresh: true})
-            } else if (action.item.name == "Bomb" || action.item.name == "Poison") {
+            } else if (action.item.name == "Bomb") {
+                target.items.push({...action.item, owner: playerName, fresh: true})
+            } else if (action.item.name == "Poison") {
                 target.items.push({...action.item, owner: playerName, fresh: false}) // Poison does dmg on turn it's applied
             } else if (action.item.name == "Single Sword") {
                 let dualTarget: BfMonster | undefined = getTargetBf(action.dualBattlefield);
@@ -181,6 +183,7 @@
                     addLog(bf.monster.name + " was killed by " + player.name + " with " + player.action.item.name, "kill")
                     player.vitality += bf.monster.maxVitality;
                     player.maxVitality = Math.max(player.maxVitality, player.vitality);
+                    addLog(player.name + " gained " + bf.monster.maxVitality + " vitality", "health");
                     // Add the drops to the player
                     if (drops.length > 0) {
                         addLog(player.name + " looted " + drops.map((d) => d.name ).join(", "), "loot");
@@ -191,6 +194,7 @@
                     addLog(bf.monster.name + " was killed by " + player.name + " with Bomb", "kill")
                     player.vitality += bf.monster.maxVitality;
                     player.maxVitality = Math.max(player.maxVitality, player.vitality);
+                    addLog(player.name + " gained " + bf.monster.maxVitality + " vitality", "health");
                     // Add the drops to the player
                     if (drops.length > 0) {
                         addLog(player.name + " looted " + drops.map((d) => d.name ).join(", "), "loot");
@@ -211,6 +215,7 @@
                         addLog(bf.monster.name + " was killed by " + killer.name + " with Poison", "kill")
                         killer.vitality += bf.monster.maxVitality;
                         killer.maxVitality = Math.max(player.maxVitality, player.vitality);
+                        addLog(killer.name + " gained " + bf.monster.maxVitality + " vitality", "health");
                         // Add the drops to the killer
                         if (drops.length > 0) {
                             addLog(killer.name + " looted " + drops.map((d) => d.name ).join(", "), "loot");
@@ -544,6 +549,9 @@
     }
     .sort {
         @apply text-pink-400;
+    }
+    .health {
+        @apply text-green-400;
     }
 
     .Poison {
