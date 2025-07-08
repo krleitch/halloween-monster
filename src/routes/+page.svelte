@@ -136,7 +136,7 @@
                 }
                 target.items.push({...action.item, owner: playerName, fresh: true})
             } else if (action.item.name == "Bomb" || action.item.name == "Poison") {
-                target.items.push({...action.item, owner: playerName, fresh: true})
+                target.items.push({...action.item, owner: playerName, fresh: false}) // Poison does dmg on turn it's applied
             } else if (action.item.name == "Single Sword") {
                 let dualTarget: BfMonster | undefined = getTargetBf(action.dualBattlefield);
                 if (!frozen) {
