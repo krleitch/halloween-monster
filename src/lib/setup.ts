@@ -191,8 +191,8 @@ let Medusa: Monster = {
 let Reaper: Monster = {
     name: "Reaper",
     img: "REAPER.PNG",
-    vitality: 30,
-    maxVitality: 30,
+    vitality: 35,
+    maxVitality: 35,
     inventory: [{
         name: "Piece R1",
         damage: 0,
